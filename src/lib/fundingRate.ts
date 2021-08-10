@@ -1,15 +1,12 @@
 import { FundingRatePayment } from ".."
 import { getTimeStampKey, TimeSpan } from "firebase-utils-common"
 
-export type FRPayment = number
-export type FRPaymentByTime = {[time: string]: FRPayment}
-
 export function calcTotalFundingRatePayments (
     payments: {[future: string]: FundingRatePayment},
     type: TimeSpan,
     digit?: number
-    ): FRPaymentByTime {
-    const result: FRPaymentByTime = {}
+    ): {[time: string]: number} {
+    const result: {[time: string]: number} = {}
     for (const future in payments) {
         const pay = payments[future]
         const key = getTimeStampKey(pay.time, type)
