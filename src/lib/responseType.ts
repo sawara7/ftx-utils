@@ -61,7 +61,6 @@ export interface FundingRate {
     future: string
     rate: number
     time: string
-    timestamp?: number
 }
 
 export interface FundingRatePayment {

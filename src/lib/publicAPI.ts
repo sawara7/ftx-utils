@@ -1,6 +1,24 @@
-import { BaseApiClass, BaseApiClassOptions, ApiConfig } from './baseAPI';
-import { GetFundingRateRequest, GetHistoricalPricesRequest, GetOrderbookRequest, GetSingleMarketRequest, GetTradesRequest } from './requestType';
-import { Response, Market, OrderBook, Trade, HistoricalPrice, FundingRate, Future } from './responseType';
+import {
+    BaseApiClass,
+    BaseApiClassOptions,
+    ApiConfig
+} from './baseAPI';
+import {
+    GetFundingRateRequest,
+    GetHistoricalPricesRequest,
+    GetOrderbookRequest,
+    GetSingleMarketRequest,
+    GetTradesRequest
+} from './requestType';
+import {
+    Response,
+    Market,
+    OrderBook,
+    Trade,
+    HistoricalPrice,
+    FundingRate,
+    Future
+} from './responseType';
 
 const BASE_URL = 'https://ftx.com';
 

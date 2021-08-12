@@ -1,7 +1,18 @@
 import * as crypto from 'crypto';
-import { BaseApiClass, BaseApiClassOptions, FTXApiConfig } from './baseAPI';
-import { Balance, FundingRatePayment, Response, Subaccount } from './responseType';
-import { GetFundingPaymentRequest } from './requestType';
+import {
+    BaseApiClass,
+    BaseApiClassOptions,
+    FTXApiConfig
+} from './baseAPI';
+import {
+    GetFundingPaymentRequest
+} from './requestType';
+import {
+    Balance,
+    FundingRatePayment,
+    Response,
+    Subaccount
+} from './responseType';
 
 const BASE_URL = 'https://ftx.com';
 export class PrivateApiClass extends BaseApiClass {
