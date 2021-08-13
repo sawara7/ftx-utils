@@ -26,7 +26,7 @@ export class PrivateApiClass extends BaseApiClass {
 
     private readonly apiKey: string;
     private readonly apiSecret: string;
-    private readonly subAccount: string;
+    private readonly subAccount?: string;
 
     constructor(config: FTXApiConfig, options?: BaseApiClassOptions) {
         config.endPoint = config.endPoint || BASE_URL;
@@ -67,12 +67,15 @@ export class PrivateApiClass extends BaseApiClass {
     private makeHeader(method: string, path: string, body: string = ''): any {
         const ts = Date.now()
         const sign = PrivateApiClass.toSha256(this.apiSecret, ts + method + path)
-        return {
+        const header = {
             'FTX-KEY': this.apiKey,
             'FTX-TS': ts.toString(),
-            'FTX-SIGN': sign,
-            'FTX-SUBACCOUNT': this.subAccount
+            'FTX-SIGN': sign
         }
+        if (this.subAccount) {
+            Object.assign(header, {'FTX-SUBACCOUNT': this.subAccount})
+        }
+        return header
     }
 }
 

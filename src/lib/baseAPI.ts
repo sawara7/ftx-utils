@@ -10,7 +10,7 @@ export interface ApiConfig {
 export interface FTXApiConfig extends ApiConfig {
     apiKey: string;
     apiSecret: string;
-    subAccount: string;
+    subAccount?: string;
 }
 
 export interface BaseApiClassOptions {
