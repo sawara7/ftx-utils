@@ -60,16 +60,16 @@ export class BaseApiClass {
 
     async request(method: Method, path: string, params?: {}, data?: {}, headers?: {}) {
         
-        let query = ''
+        let queryPath = path
         if (params && Object.keys(params).length > 0) {
-            query = querystring.encode(params)
+            queryPath += '?' + querystring.encode(params)
         }
-        console.log(query)
+        console.log(queryPath)
 
         const options = {
             method: method,
             baseURL: this.endPoint,
-            url: path + query,
+            url: queryPath,
             // timeout: this.timeout
             // httpAgent: new http.Agent({ keepAlive: this.keepAlive }),
             // httpsAgent: new https.Agent({ keepAlive: this.keepAlive })
