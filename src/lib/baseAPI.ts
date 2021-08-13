@@ -1,6 +1,6 @@
-import axios, { AxiosError, Method } from 'axios';
-export const FTX_API_NAME = 'ftx';
-
+import axios, { AxiosError, Method } from 'axios'
+import * as querystring from 'querystring'
+export const FTX_API_NAME = 'ftx'
 export interface ApiConfig {
     endPoint?: string;
     keepAlive?: boolean;
@@ -59,17 +59,20 @@ export class BaseApiClass {
     }
 
     async request(method: Method, path: string, params?: {}, data?: {}, headers?: {}) {
+        
+        let query = ''
+        if (params && Object.keys(params).length > 0) {
+            query = querystring.encode(params)
+        }
+        console.log(query)
+
         const options = {
             method: method,
             baseURL: this.endPoint,
-            url: path,
+            url: path + query,
             // timeout: this.timeout
             // httpAgent: new http.Agent({ keepAlive: this.keepAlive }),
             // httpsAgent: new https.Agent({ keepAlive: this.keepAlive })
-        }
-
-        if (params && Object.keys(params).length > 0) {
-            Object.assign(options, { params });
         }
 
         if (data && Object.keys(data).length >= 0) {

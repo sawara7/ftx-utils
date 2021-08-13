@@ -19,6 +19,6 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "firebase-utils-common": "github:sawara7/firebase-utils-common"
+    "querystring": "^0.2.1"
   }
 }
