@@ -62,7 +62,7 @@ export class PrivateApiClass extends BaseApiClass {
         if (query && Object.keys(query).length > 0) {
             queryPath += '?' + querystring.encode(query)
         }
-        return super.get(path, query, this.makeHeader('GET', queryPath))
+        return super.get(queryPath, query, this.makeHeader('GET', queryPath))
     }
 
     post<T>(path: string, body: {}) {
