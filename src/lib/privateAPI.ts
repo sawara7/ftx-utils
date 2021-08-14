@@ -37,7 +37,7 @@ export class PrivateApiClass extends BaseApiClass {
         this.subAccount = config.subAccount;
     }
 
-    public getAllSubaccounts(): Promise<Response<Subaccount>> {
+    public getAllSubaccounts(): Promise<Response<Subaccount[]>> {
         const path = '/api/subaccounts'
         return this.get(path, {})
     }

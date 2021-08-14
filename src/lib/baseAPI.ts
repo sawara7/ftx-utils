@@ -1,5 +1,4 @@
 import axios, { AxiosError, Method } from 'axios'
-import * as querystring from 'querystring'
 export const FTX_API_NAME = 'ftx'
 export interface ApiConfig {
     endPoint?: string;
