@@ -118,3 +118,21 @@ export interface OpenOrder {
     postOnly: boolean;	//false	
     clientId?: string;//optional; client order id
 }
+
+export interface PlaceOrderResponce {
+    createdAt: string; //2019-03-05T09:56:55.728933+00:00	
+    filledSize:	number; //0.0	
+    future:	string; //XRP-PERP	
+    id:	number; //9596912	
+    market:	string; //XRP-PERP	
+    price: number; //0.306525	
+    remainingSize: number; //31431.0	
+    side: string; //sell	
+    size: number; //31431.0	
+    status:	string; //new (accepted but not processed yet), open, or closed (filled or cancelled)	
+    type:	string; //limit	
+    reduceOnly:	boolean; //false	
+    ioc: boolean; //false	
+    postOnly: boolean; //false	
+    clientId: string; //optional; client order id, if supplied
+}

@@ -38,3 +38,16 @@ export interface GetFundingPaymentRequest {
     end_time?: number
     future?: string
 }
+
+export interface PlaceOrderRequest {
+    market:	string; //	XRP-PERP	e.g. "BTC/USD" for spot, "XRP-PERP" for futures
+    side: string; //	sell	"buy" or "sell" 
+    price: number; //	0.306525	Send null for market orders.
+    type: string; //	limit	"limit" or "market"
+    size: number; //	31431.0	
+    reduceOnly?: boolean; //	false	optional; default is false
+    ioc?: boolean; //	false	optional; default is false
+    postOnly?: boolean; //	false	optional; default is false
+    clientId?: string; //	null	optional; client order id
+    rejectOnPriceBand?: boolean; //	false	optional; if the order should be rejected if its price would instead be adjusted due to price bands
+}

@@ -5,12 +5,13 @@ import {
     FTXApiConfig
 } from './baseAPI'
 import {
-    GetFundingPaymentRequest
+    GetFundingPaymentRequest, PlaceOrderRequest
 } from './requestType'
 import {
     Balance,
     FundingRatePayment,
     OpenOrder,
+    PlaceOrderResponce,
     Response,
     Subaccount
 } from './responseType'
@@ -61,6 +62,11 @@ export class PrivateApiClass extends BaseApiClass {
     public getOpenOrders(): Promise<Response<OpenOrder[]>> {
         const path = '/api/orders'
         return this.get(path, {})
+    }
+
+    public placeOrder(params: PlaceOrderRequest): Promise<Response<PlaceOrderResponce>> {
+        const path = '/api/orders'
+        return this.post(path, params)
     }
 
     get<T>(path: string, query?: {}) {
