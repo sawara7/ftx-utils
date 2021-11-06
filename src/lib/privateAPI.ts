@@ -71,7 +71,7 @@ export class PrivateApiClass extends BaseApiClass {
         return this.post(path, params)
     }
 
-    public getFills(params: GetFillsRequest): Promise<Response<GetFillsResponse>> {
+    public getFills(params: GetFillsRequest): Promise<Response<GetFillsResponse[]>> {
         const path = '/api/fills'
         return this.get(path, params)
     }
