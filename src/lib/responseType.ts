@@ -100,3 +100,21 @@ export interface Future {
     upperBound: number,
     type: string
 }
+
+export interface OpenOrder {
+    id: number;	
+    market: string;	
+    type: string;	
+    side: string;	
+    price: number;	
+    size: number;	
+    filledSize: number;	
+    remainingSize: number;	
+    avgFillPrice: number;	
+    status: string; //new (accepted but not processed yet), open, or closed (filled or cancelled)	
+    createdAt: string;	//2019-03-05T09:56:55.728933+00:00	
+    reduceOnly: boolean;	//false	
+    ioc: boolean;	//false	
+    postOnly: boolean;	//false	
+    clientId?: string;//optional; client order id
+}

@@ -10,6 +10,7 @@ import {
 import {
     Balance,
     FundingRatePayment,
+    OpenOrder,
     Response,
     Subaccount
 } from './responseType'
@@ -55,6 +56,11 @@ export class PrivateApiClass extends BaseApiClass {
     public getFundingPayment(params: GetFundingPaymentRequest): Promise<Response<FundingRatePayment[]>> {
         const path = '/api/funding_payments'
         return this.get(path, params)
+    }
+
+    public getOpenOrders(): Promise<Response<OpenOrder[]>> {
+        const path = '/api/orders'
+        return this.get(path, {})
     }
 
     get<T>(path: string, query?: {}) {
