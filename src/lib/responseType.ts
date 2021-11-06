@@ -136,3 +136,22 @@ export interface PlaceOrderResponce {
     postOnly: boolean; //false	
     clientId: string; //optional; client order id, if supplied
 }
+
+export interface GetFillsResponse {
+    fee: number; //20.1374935	
+    feeCurrency: string; //USD	
+    feeRate: number; //0.0005	
+    future: string; //EOS-0329	
+    id: number; //11215	fill id
+    liquidity: string; //taker	"taker" or "maker"
+    market: string; //EOS-0329	
+    baseCurrency: string; //BTC	spot markets only
+    quoteCurrency: string; //USD	spot markets only
+    orderId: number;	//8436981	
+    tradeId: number;	//1013912	null for trades before 2019-02-19 10:00:00
+    price: number;	//4.201	
+    side: string;	//buy	
+    size: number;	//9587.0	
+    time: string;	//2019-03-27T19:15:10.204619+00:00	
+    type: string;	//order
+}

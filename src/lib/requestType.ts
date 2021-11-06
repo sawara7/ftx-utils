@@ -51,3 +51,11 @@ export interface PlaceOrderRequest {
     clientId?: string; //	null	optional; client order id
     rejectOnPriceBand?: boolean; //	false	optional; if the order should be rejected if its price would instead be adjusted due to price bands
 }
+
+export interface GetFillsRequest {
+    market: string; //BTC-0329	optional; market to limit fills
+    start_time:	number;	//1564146934	optional; minimum time of fills to return, in Unix time (seconds since 1970-01-01)
+    end_time: number;	//1564233334	optional; maximum time of fills to return, in Unix time (seconds since 1970-01-01)
+    order?: string; //null	optional; default is descending, supply 'asc' to receive fills in ascending order of time
+    orderId?: number; //null
+}
