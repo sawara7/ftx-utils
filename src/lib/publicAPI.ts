@@ -33,7 +33,7 @@ export class PublicApiClass extends BaseApiClass {
         return this.get(path)
     }
 
-    public getSingleMarket(request: GetSingleMarketRequest): Promise<Response<Market[]>> {
+    public getSingleMarket(request: GetSingleMarketRequest): Promise<Response<Market>> {
         const path = '/api/markets/' + request.market_name
         return this.get(path)
     }
