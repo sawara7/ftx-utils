@@ -155,3 +155,21 @@ export interface GetFillsResponse {
     time: string;	//2019-03-27T19:15:10.204619+00:00	
     type: string;	//order
 }
+
+export interface GetOrderHistoryResponse {
+    id: number; //257132591	
+    market: string; //BTC-PERP
+    type: string; //limit	
+    side: string; //buy	
+    price: number; //10135.25	
+    size: number; //0.001	
+    filledSize: number; //0.001	
+    remainingSize: number; //0.0	
+    avgFillPrice: number; //10135.25	
+    status: string;	//new (accepted but not processed yet), open, or closed (filled or cancelled)	
+    createdAt: string; //2019-06-27T15:24:03.101197+00:00	
+    reduceOnly: boolean; //false	
+    ioc: boolean; //false	
+    postOnly: boolean; //false	
+    clientId?: string; //optional; client order id
+}

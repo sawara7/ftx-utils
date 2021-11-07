@@ -6,12 +6,13 @@ import {
 } from './baseAPI'
 import {
     GetFillsRequest,
-    GetFundingPaymentRequest, PlaceOrderRequest
+    GetFundingPaymentRequest, GetOrderHistoryRequest, PlaceOrderRequest
 } from './requestType'
 import {
     Balance,
     FundingRatePayment,
     GetFillsResponse,
+    GetOrderHistoryResponse,
     OpenOrder,
     PlaceOrderResponce,
     Response,
@@ -73,6 +74,11 @@ export class PrivateApiClass extends BaseApiClass {
 
     public getFills(params: GetFillsRequest): Promise<Response<GetFillsResponse[]>> {
         const path = '/api/fills'
+        return this.get(path, params)
+    }
+
+    public getOrderHistory(params: GetOrderHistoryRequest): Promise<Response<GetOrderHistoryResponse[]>> {
+        const path = '/api/orders/history'
         return this.get(path, params)
     }
 

@@ -59,3 +59,11 @@ export interface GetFillsRequest {
     order?: string; //null	optional; default is descending, supply 'asc' to receive fills in ascending order of time
     orderId?: number; //null
 }
+
+export interface GetOrderHistoryRequest {
+    market: string;	//BTC-0329	optional; market to limit orders
+    side?: string; //buy	optional; buy or sell side
+    orderType?: string; //limit	optional; market or limit orders
+    start_time?: number; //1559881511	optional; only fetch orders created after this time
+    end_time?: number; //1559901511	optional; only fetch orders created before this time
+}
