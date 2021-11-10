@@ -85,7 +85,7 @@ export class PrivateApiClass extends BaseApiClass {
 
     public requestWithdrawal(params: WithdrawalRequest): Promise<Response<WithdrawalResponse>> {
         const path = '/api/wallet/withdrawals'
-        return this.get(path, params)
+        return this.post(path, params)
     }
 
     get<T>(path: string, query?: {}) {
