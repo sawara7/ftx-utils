@@ -173,3 +173,15 @@ export interface GetOrderHistoryResponse {
     postOnly: boolean; //false	
     clientId?: string; //optional; client order id
 }
+
+export interface WithdrawalResponse {
+    coin: string;
+    address: string;
+    tag: string | null;
+    fee: number;
+    id: number;
+    size: number;
+    status: string;
+    time: string;
+    txid: string | null;
+}

@@ -67,3 +67,13 @@ export interface GetOrderHistoryRequest {
     start_time?: number; //1559881511	optional; only fetch orders created after this time
     end_time?: number; //1559901511	optional; only fetch orders created before this time
 }
+
+export interface WithdrawalRequest {
+    coin: string;
+    size: number;
+    address: string;
+    tag: string | null;
+    method: string | null;
+    password: string | null;
+    code: string | null;
+}

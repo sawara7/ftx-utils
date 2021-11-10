@@ -6,7 +6,7 @@ import {
 } from './baseAPI'
 import {
     GetFillsRequest,
-    GetFundingPaymentRequest, GetOrderHistoryRequest, PlaceOrderRequest
+    GetFundingPaymentRequest, GetOrderHistoryRequest, PlaceOrderRequest, WithdrawalRequest
 } from './requestType'
 import {
     Balance,
@@ -16,7 +16,8 @@ import {
     OpenOrder,
     PlaceOrderResponce,
     Response,
-    Subaccount
+    Subaccount,
+    WithdrawalResponse
 } from './responseType'
 import * as querystring from 'querystring'
 
@@ -79,6 +80,11 @@ export class PrivateApiClass extends BaseApiClass {
 
     public getOrderHistory(params: GetOrderHistoryRequest): Promise<Response<GetOrderHistoryResponse[]>> {
         const path = '/api/orders/history'
+        return this.get(path, params)
+    }
+
+    public requestWithdrawal(params: WithdrawalRequest): Promise<Response<WithdrawalResponse>> {
+        const path = '/api/wallet/withdrawals'
         return this.get(path, params)
     }
 
