@@ -8,19 +8,15 @@ export interface GetSingleMarketRequest {
 }
 
 export interface GetOrderbookRequest {
-    market_name: string
     depth: number
 }
 
 export interface GetTradesRequest {
-    market_name: string	//string	BTC-0628	name of the market
-    limit: number //35	optional, max 100, default 20
-    start_time: number //number	1559881511	optional
-    end_time: number //1559881711	optional
+    start_time?: number //number	1559881511	optional
+    end_time?: number //1559881711	optional
 }
 
 export interface GetHistoricalPricesRequest {
-    market_name: string	//BTC-0628	name of the market
     resolution: number //300	window length in seconds. options: 15, 60, 300, 900, 3600, 14400, 86400
     start_time?: number //1559881511	optional
     end_time?: number //1559881711	optional

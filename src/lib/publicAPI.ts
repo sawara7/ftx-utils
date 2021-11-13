@@ -38,18 +38,18 @@ export class PublicApiClass extends BaseApiClass {
         return this.get(path)
     }
     
-    public getOrderbook(request: GetOrderbookRequest): Promise<Response<OrderBook>> {
-        const path = '/api/markets/' + request.market_name + '/orderbook'
+    public getOrderbook(market: string, request: GetOrderbookRequest): Promise<Response<OrderBook>> {
+        const path = '/api/markets/' + market + '/orderbook'
         return this.get(path, request)
     }
 
-    public getTrades(request: GetTradesRequest): Promise<Response<Trade>> {
-        const path = '/api/markets/' + request.market_name + '/trades'
+    public getTrades(market: string, request: GetTradesRequest): Promise<Response<Trade>> {
+        const path = '/api/markets/' + market + '/trades'
         return this.get(path, request)
     }
 
-    public getHistoricalPrices(request: GetHistoricalPricesRequest): Promise<Response<HistoricalPrice[]>> {
-        const path = '/api/markets/' + request.market_name + '/candles'
+    public getHistoricalPrices(market: string, request: GetHistoricalPricesRequest): Promise<Response<HistoricalPrice[]>> {
+        const path = '/api/markets/' + market + '/candles'
         return this.get(path, request)
     }
 
