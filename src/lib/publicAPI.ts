@@ -43,7 +43,7 @@ export class PublicApiClass extends BaseApiClass {
         return this.get(path, request)
     }
 
-    public getTrades(market: string, request: GetTradesRequest): Promise<Response<Trade>> {
+    public getTrades(market: string, request: GetTradesRequest): Promise<Response<Trade[]>> {
         const path = '/api/markets/' + market + '/trades'
         return this.get(path, request)
     }
