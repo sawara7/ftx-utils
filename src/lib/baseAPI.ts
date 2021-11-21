@@ -69,7 +69,7 @@ export class BaseApiClass {
             method: method,
             baseURL: this.endPoint,
             url: queryPath,
-            // timeout: this.timeout
+            timeout: this.timeout
             // httpAgent: new http.Agent({ keepAlive: this.keepAlive }),
             // httpsAgent: new https.Agent({ keepAlive: this.keepAlive })
         }
