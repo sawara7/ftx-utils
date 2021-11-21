@@ -102,7 +102,8 @@ export class PrivateApiClass extends BaseApiClass {
 
     private makeHeader(method: string, path: string, body: string = ''): any {
         const ts = Date.now()
-        const sign = PrivateApiClass.toSha256(this.apiSecret, ts + method + path + body)
+        const s = ts + method + path + (method === 'POST'?  body: '')
+        const sign = PrivateApiClass.toSha256(this.apiSecret, s)
         const header = {
             'FTX-KEY': this.apiKey,
             'FTX-TS': ts.toString(),
