@@ -61,9 +61,9 @@ export class BaseApiClass {
     async request(method: Method, path: string, params?: {}, data?: {}, headers?: {}) {
         
         let queryPath = path
-        if (params && Object.keys(params).length > 0) {
-            queryPath += '?' + querystring.encode(params)
-        }
+        // if (params && Object.keys(params).length > 0) {
+        //     queryPath += '?' + querystring.encode(params)
+        // }
         console.log(queryPath)
         const options = {
             method: method,
