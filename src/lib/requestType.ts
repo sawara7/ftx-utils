@@ -37,7 +37,7 @@ export interface GetFundingPaymentRequest {
 export interface PlaceOrderRequest {
     market:	string; //	XRP-PERP	e.g. "BTC/USD" for spot, "XRP-PERP" for futures
     side: string; //	sell	"buy" or "sell" 
-    price: number; //	0.306525	Send null for market orders.
+    price: number | null; //	0.306525	Send null for market orders.
     type: string; //	limit	"limit" or "market"
     size: number; //	31431.0	
     reduceOnly?: boolean; //	false	optional; default is false
