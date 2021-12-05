@@ -88,6 +88,11 @@ export class PrivateApiClass extends BaseApiClass {
         return this.post(path, params)
     }
 
+    public cancelAllOrder(market: string): Promise<Response<string>> {
+        const path = '/api/orders'
+        return this.delete(path, {market})
+    }
+
     get<T>(path: string, query?: {}) {
         let queryPath = path
         if (query && Object.keys(query).length > 0) {
@@ -98,6 +103,14 @@ export class PrivateApiClass extends BaseApiClass {
 
     post<T>(path: string, body: {}) {
         return super.post(path, body, this.makeHeader('POST', path, JSON.stringify(body)))
+    }
+
+    delete<T>(path: string, query?: {}) {
+        let queryPath = path
+        if (query && Object.keys(query).length > 0) {
+            queryPath += '?' + querystring.encode(query)
+        }
+        return super.delete(queryPath, query, this.makeHeader('GET', queryPath))
     }
 
     private makeHeader(method: string, path: string, body: string = ''): any {
