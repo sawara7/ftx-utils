@@ -61,7 +61,6 @@ export class BaseApiClass {
     async request(method: Method, path: string, params?: {}, data?: {}, headers?: {}) {
         
         let queryPath = path
-        console.log(queryPath)
         const options = {
             method: method,
             baseURL: this.endPoint,
