@@ -19,6 +19,7 @@ import {
     FundingRate,
     Future
 } from './responseType';
+import * as querystring from 'querystring'
 
 const BASE_URL = 'https://ftx.com';
 
@@ -26,6 +27,14 @@ export class PublicApiClass extends BaseApiClass {
     constructor(config: ApiConfig, options?: BaseApiClassOptions) {
         config.endPoint = config.endPoint || BASE_URL
         super(config, options)
+    }
+
+    get<T>(path: string, query?: {}) {
+        let queryPath = path
+        if (query && Object.keys(query).length > 0) {
+            queryPath += '?' + querystring.encode(query)
+        }
+        return super.get(queryPath, query)
     }
 
     public getMarkets(): Promise<Response<Market[]>> {
