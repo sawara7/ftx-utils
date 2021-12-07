@@ -93,9 +93,9 @@ var PrivateApiClass = /** @class */ (function (_super) {
         var path = '/api/wallet/withdrawals';
         return this.post(path, params);
     };
-    PrivateApiClass.prototype.cancelAllOrder = function (market) {
+    PrivateApiClass.prototype.cancelAllOrder = function (params) {
         var path = '/api/orders';
-        return this.delete(path, { market: market });
+        return this.delete(path, params);
     };
     PrivateApiClass.prototype.get = function (path, query) {
         var queryPath = path;
@@ -112,7 +112,7 @@ var PrivateApiClass = /** @class */ (function (_super) {
         if (query && Object.keys(query).length > 0) {
             queryPath += '?' + querystring.encode(query);
         }
-        return _super.prototype.delete.call(this, queryPath, query, this.makeHeader('GET', queryPath));
+        return _super.prototype.delete.call(this, queryPath, query, this.makeHeader('DELETE', queryPath));
     };
     PrivateApiClass.prototype.makeHeader = function (method, path, body) {
         if (body === void 0) { body = ''; }

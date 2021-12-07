@@ -72,3 +72,10 @@ export interface WithdrawalRequest {
     password: string | null;
     code: string | null;
 }
+
+export interface CancelAllOrdersRequest {
+    market?: string;	//USDTBEAR	optional; restrict to cancelling orders only on this market
+    side?: string;	//buy	optional; restrict to cancelling orders only on this side
+    conditionalOrdersOnly?: boolean;	//false	optional; restrict to cancelling conditional orders only
+    limitOrdersOnly?: boolean;
+}

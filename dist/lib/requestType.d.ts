@@ -62,3 +62,9 @@ export interface WithdrawalRequest {
     password: string | null;
     code: string | null;
 }
+export interface CancelAllOrdersRequest {
+    market?: string;
+    side?: string;
+    conditionalOrdersOnly?: boolean;
+    limitOrdersOnly?: boolean;
+}

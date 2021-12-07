@@ -5,6 +5,7 @@ import {
     FTXApiConfig
 } from './baseAPI'
 import {
+    CancelAllOrdersRequest,
     GetFillsRequest,
     GetFundingPaymentRequest, GetOrderHistoryRequest, PlaceOrderRequest, WithdrawalRequest
 } from './requestType'
@@ -88,9 +89,9 @@ export class PrivateApiClass extends BaseApiClass {
         return this.post(path, params)
     }
 
-    public cancelAllOrder(market: string): Promise<Response<string>> {
+    public cancelAllOrder(params: CancelAllOrdersRequest): Promise<Response<string>> {
         const path = '/api/orders'
-        return this.delete(path, {market})
+        return this.delete(path, params)
     }
 
     get<T>(path: string, query?: {}) {
@@ -110,7 +111,7 @@ export class PrivateApiClass extends BaseApiClass {
         if (query && Object.keys(query).length > 0) {
             queryPath += '?' + querystring.encode(query)
         }
-        return super.delete(queryPath, query, this.makeHeader('GET', queryPath))
+        return super.delete(queryPath, query, this.makeHeader('DELETE', queryPath))
     }
 
     private makeHeader(method: string, path: string, body: string = ''): any {
