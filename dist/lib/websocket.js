@@ -42,20 +42,23 @@ var WebsocketAPI = /** @class */ (function () {
                     _this.onTrades(t.data);
                 }
             }
-            if (t.channel === 'ticker') {
+            else if (t.channel === 'ticker') {
                 if (_this.onTicker && t.data) {
                     _this.onTicker(t.data);
                 }
             }
-            if (t.channel === 'fills') {
+            else if (t.channel === 'fills') {
                 if (_this.onFill && t.data) {
                     _this.onFill(t.data);
                 }
             }
-            if (t.channel === 'orders') {
+            else if (t.channel === 'orders') {
                 if (_this.onOrder && t.data) {
                     _this.onOrder(t.data);
                 }
+            }
+            else {
+                console.log(event);
             }
         };
         this.socket = new ws_1.WebSocket('wss://ftx.com/ws/');
@@ -66,7 +69,7 @@ var WebsocketAPI = /** @class */ (function () {
     WebsocketAPI.prototype.login = function (apiKey, secret, subaccount) {
         var t = Date.now();
         this.socket.send(JSON.stringify({
-            'op': 'subscribe',
+            'op': 'login',
             'args': {
                 'key': apiKey,
                 'sign': crypto

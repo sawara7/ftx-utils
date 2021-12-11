@@ -91,28 +91,27 @@ export class WebsocketAPI {
             if (this.onTrades && t.data && t.data.length > 0) {
                 this.onTrades(t.data as wsTrade[])
             }
-        }
-        if (t.channel === 'ticker') {
+        }else if (t.channel === 'ticker') {
             if (this.onTicker && t.data) {
                 this.onTicker(t.data as wsTicker)
             }
-        }
-        if (t.channel === 'fills') {
+        }else if (t.channel === 'fills') {
             if (this.onFill && t.data) {
                 this.onFill(t.data as wsFill)
             }
-        }
-        if (t.channel === 'orders') {
+        }else if (t.channel === 'orders') {
             if (this.onOrder && t.data) {
                 this.onOrder(t.data as wsOrder)
             }
+        }else{
+            console.log(event)
         }
     }
 
     public login(apiKey:string, secret: string, subaccount: string) {
         const t = Date.now()
         this.socket.send(JSON.stringify({
-            'op': 'subscribe',
+            'op': 'login',
             'args': {
                 'key': apiKey,
                 'sign': crypto
