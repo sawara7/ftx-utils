@@ -14,4 +14,4 @@ __exportStar(require("./lib/privateAPI"), exports);
 __exportStar(require("./lib/publicAPI"), exports);
 __exportStar(require("./lib/requestType"), exports);
 __exportStar(require("./lib/responseType"), exports);
-__exportStar(require("./lib/fundingRate"), exports);
+__exportStar(require("./lib/websocket"), exports);
