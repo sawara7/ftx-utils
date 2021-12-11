@@ -24,45 +24,45 @@ var ws_1 = require("ws");
 var crypto = __importStar(require("crypto"));
 var WebsocketAPI = /** @class */ (function () {
     function WebsocketAPI() {
+        var _this = this;
+        this.onOpen = function () {
+            _this.socket.send(JSON.stringify({ 'op': 'ping' }));
+            setInterval(function () {
+                _this.socket.send(JSON.stringify({ 'op': 'ping' }));
+            }, 15 * 1000);
+        };
+        this.onError = function () {
+            console.log('サーバーへの接続に失敗しました');
+        };
+        this.onMessage = function (event) {
+            var d = JSON.parse(event.data.toString());
+            var t = d;
+            if (t.channel === 'trades') {
+                if (_this.onTrades && t.data && t.data.length > 0) {
+                    _this.onTrades(t.data);
+                }
+            }
+            if (t.channel === 'ticker') {
+                if (_this.onTicker && t.data) {
+                    _this.onTicker(t.data);
+                }
+            }
+            if (t.channel === 'fills') {
+                if (_this.onFill && t.data) {
+                    _this.onFill(t.data);
+                }
+            }
+            if (t.channel === 'orders') {
+                if (_this.onOrder && t.data) {
+                    _this.onOrder(t.data);
+                }
+            }
+        };
         this.socket = new ws_1.WebSocket('wss://ftx.com/ws/');
         this.socket.addEventListener('error', this.onError);
         this.socket.addEventListener('open', this.onOpen);
         this.socket.addEventListener('message', this.onMessage);
     }
-    WebsocketAPI.prototype.onOpen = function () {
-        var _this = this;
-        this.socket.send(JSON.stringify({ 'op': 'ping' }));
-        setInterval(function () {
-            _this.socket.send(JSON.stringify({ 'op': 'ping' }));
-        }, 15 * 1000);
-    };
-    WebsocketAPI.prototype.onError = function () {
-        console.log('サーバーへの接続に失敗しました');
-    };
-    WebsocketAPI.prototype.onMessage = function (event) {
-        var d = JSON.parse(event.data.toString());
-        var t = d;
-        if (t.channel === 'trades') {
-            if (this.onTrades && t.data && t.data.length > 0) {
-                this.onTrades(t.data);
-            }
-        }
-        if (t.channel === 'ticker') {
-            if (this.onTicker && t.data) {
-                this.onTicker(t.data);
-            }
-        }
-        if (t.channel === 'fills') {
-            if (this.onFill && t.data) {
-                this.onFill(t.data);
-            }
-        }
-        if (t.channel === 'orders') {
-            if (this.onOrder && t.data) {
-                this.onOrder(t.data);
-            }
-        }
-    };
     WebsocketAPI.prototype.login = function (apiKey, secret, subaccount) {
         var t = Date.now();
         this.socket.send(JSON.stringify({

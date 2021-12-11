@@ -73,18 +73,18 @@ export class WebsocketAPI {
         this.socket.addEventListener('message', this.onMessage)
     }
 
-    private onOpen() {
+    private onOpen = () => {
         this.socket.send(JSON.stringify({'op': 'ping'}))
         setInterval(() => {
             this.socket.send(JSON.stringify({'op': 'ping'}))
         }, 15 * 1000)
     }
 
-    private onError() {
+    private onError = () => {
         console.log('サーバーへの接続に失敗しました')
     }
 
-    private onMessage(event: MessageEvent) {
+    private onMessage = (event: MessageEvent) => {
         const d = JSON.parse(event.data.toString())
         const t = d as wsResponse<any>
         if (t.channel === 'trades') {
