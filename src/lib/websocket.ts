@@ -103,8 +103,10 @@ export class WebsocketAPI {
             if (this.onOrder && t.data) {
                 this.onOrder(t.data as wsOrder)
             }
+        }else if (t.channel === 'pong') {
+            console.log(event.data)
         }else{
-            console.log(event)
+            console.log(event.data)
         }
     }
 

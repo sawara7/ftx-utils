@@ -57,8 +57,11 @@ var WebsocketAPI = /** @class */ (function () {
                     _this.onOrder(t.data);
                 }
             }
+            else if (t.channel === 'pong') {
+                console.log(event.data);
+            }
             else {
-                console.log(event);
+                console.log(event.data);
             }
         };
         this.socket = new ws_1.WebSocket('wss://ftx.com/ws/');
