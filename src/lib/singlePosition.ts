@@ -101,9 +101,10 @@ export class SinglePosition {
     public updateOrder(order: wsOrder) {
         if (order.id === this.openID) {
             if (order.remainingSize > 0 &&
-                order.status === 'complete'
+                order.status === 'closed'
             ){
                 this.openID = 0
+                this.positionSize += order.filledSize
                 if (this.onOpenOrderCanceled){
                     this.onOpenOrderCanceled()
                 }
@@ -111,9 +112,10 @@ export class SinglePosition {
         }
         if (order.id === this.closeID) {
             if (order.remainingSize > 0 &&
-                order.status === 'complete'
+                order.status === 'closed'
             ){
                 this.closeID = 0
+                this.positionSize -= order.filledSize
                 if (this.onCloseOrderCanceled){
                     this.onCloseOrderCanceled()
                 }

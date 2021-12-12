@@ -168,8 +168,9 @@ var SinglePosition = /** @class */ (function () {
     SinglePosition.prototype.updateOrder = function (order) {
         if (order.id === this.openID) {
             if (order.remainingSize > 0 &&
-                order.status === 'complete') {
+                order.status === 'closed') {
                 this.openID = 0;
+                this.positionSize += order.filledSize;
                 if (this.onOpenOrderCanceled) {
                     this.onOpenOrderCanceled();
                 }
@@ -177,8 +178,9 @@ var SinglePosition = /** @class */ (function () {
         }
         if (order.id === this.closeID) {
             if (order.remainingSize > 0 &&
-                order.status === 'complete') {
+                order.status === 'closed') {
                 this.closeID = 0;
+                this.positionSize -= order.filledSize;
                 if (this.onCloseOrderCanceled) {
                     this.onCloseOrderCanceled();
                 }
