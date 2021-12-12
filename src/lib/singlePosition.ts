@@ -2,7 +2,7 @@ import { PrivateApiClass, wsFill, wsOrder } from "..";
 import { Response, PlaceOrderResponce } from "..";
 
 export class SinglePosition {
-    private positionSize: number = 0;
+    public positionSize: number = 0;
     private openID: number = 0;
     private closeID: number = 0;
     private openTime: number = 0;

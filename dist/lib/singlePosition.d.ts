@@ -3,7 +3,7 @@ export declare class SinglePosition {
     private marketName;
     private funds;
     private api;
-    private positionSize;
+    positionSize: number;
     private openID;
     private closeID;
     private openTime;
