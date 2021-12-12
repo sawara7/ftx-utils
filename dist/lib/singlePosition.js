@@ -223,6 +223,24 @@ var SinglePosition = /** @class */ (function () {
             }
         }
     };
+    Object.defineProperty(SinglePosition.prototype, "enabledOpen", {
+        get: function () {
+            return this.openID === 0 &&
+                this.closeID === 0 &&
+                this.positionSize === 0;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(SinglePosition.prototype, "enabledClose", {
+        get: function () {
+            return this.openID !== 0 &&
+                this.closeID === 0 &&
+                this.positionSize > 0;
+        },
+        enumerable: false,
+        configurable: true
+    });
     return SinglePosition;
 }());
 exports.SinglePosition = SinglePosition;

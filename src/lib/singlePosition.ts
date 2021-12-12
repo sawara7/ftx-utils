@@ -161,4 +161,16 @@ export class SinglePosition {
             }
         }
     }
+
+    get enabledOpen(): Boolean {
+        return  this.openID === 0 &&
+                this.closeID === 0 &&
+                this.positionSize === 0
+    }
+
+    get enabledClose(): Boolean {
+        return  this.openID !== 0 &&
+                this.closeID === 0 &&
+                this.positionSize > 0
+    }
 }

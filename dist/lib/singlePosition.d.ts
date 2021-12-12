@@ -27,4 +27,6 @@ export declare class SinglePosition {
     closeLimit(price: number, cancelSec?: number): Promise<void>;
     updateOrder(order: wsOrder): void;
     updateFill(fill: wsFill): void;
+    get enabledOpen(): Boolean;
+    get enabledClose(): Boolean;
 }
