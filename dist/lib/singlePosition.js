@@ -167,7 +167,7 @@ var SinglePosition = /** @class */ (function () {
     };
     SinglePosition.prototype.updateOrder = function (order) {
         if (order.id === this.openID) {
-            if (order.remainingSize > 0 &&
+            if (order.filledSize !== order.size &&
                 order.status === 'closed') {
                 this.openID = 0;
                 this.positionSize += order.filledSize;
@@ -177,7 +177,7 @@ var SinglePosition = /** @class */ (function () {
             }
         }
         if (order.id === this.closeID) {
-            if (order.remainingSize > 0 &&
+            if (order.filledSize !== order.size &&
                 order.status === 'closed') {
                 this.closeID = 0;
                 this.positionSize -= order.filledSize;
