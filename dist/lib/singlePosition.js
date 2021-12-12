@@ -72,7 +72,11 @@ var SinglePosition = /** @class */ (function () {
             var res;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.placeOrder(this.openSide, 'market', this.funds / price)];
+                    case 0:
+                        if (this.openID > 0) {
+                            throw Error('Position is already opened.');
+                        }
+                        return [4 /*yield*/, this.placeOrder(this.openSide, 'market', this.funds / price)];
                     case 1:
                         res = _a.sent();
                         this.openID = res.result.id;
@@ -82,16 +86,31 @@ var SinglePosition = /** @class */ (function () {
             });
         });
     };
-    SinglePosition.prototype.openLimit = function (price) {
+    SinglePosition.prototype.openLimit = function (price, cancelSec) {
+        if (cancelSec === void 0) { cancelSec = 0; }
         return __awaiter(this, void 0, void 0, function () {
             var res;
+            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.placeOrder(this.openSide, 'limit', this.funds / price, price)];
+                    case 0:
+                        if (this.openID > 0) {
+                            throw Error('Position is already opened.');
+                        }
+                        return [4 /*yield*/, this.placeOrder(this.openSide, 'limit', this.funds / price, price)];
                     case 1:
                         res = _a.sent();
                         this.openID = res.result.id;
                         this.openTime = Date.now();
+                        if (cancelSec > 0) {
+                            setInterval(function () {
+                                if (_this.openID !== 0) {
+                                    _this.api.cancelAllOrder({
+                                        market: _this.marketName
+                                    });
+                                }
+                            }, cancelSec * 1000);
+                        }
                         return [2 /*return*/];
                 }
             });
@@ -102,7 +121,11 @@ var SinglePosition = /** @class */ (function () {
             var res;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.placeOrder(this.openSide === 'buy' ? 'sell' : 'buy', 'market', this.positionSize)];
+                    case 0:
+                        if (this.closeID > 0) {
+                            throw Error('Position is already closed.');
+                        }
+                        return [4 /*yield*/, this.placeOrder(this.openSide === 'buy' ? 'sell' : 'buy', 'market', this.positionSize)];
                     case 1:
                         res = _a.sent();
                         this.closeID = res.result.id;
@@ -112,16 +135,31 @@ var SinglePosition = /** @class */ (function () {
             });
         });
     };
-    SinglePosition.prototype.closeLimit = function (price) {
+    SinglePosition.prototype.closeLimit = function (price, cancelSec) {
+        if (cancelSec === void 0) { cancelSec = 0; }
         return __awaiter(this, void 0, void 0, function () {
             var res;
+            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.placeOrder(this.openSide === 'buy' ? 'sell' : 'buy', 'limit', this.positionSize, price)];
+                    case 0:
+                        if (this.closeID > 0) {
+                            throw Error('Position is already closed.');
+                        }
+                        return [4 /*yield*/, this.placeOrder(this.openSide === 'buy' ? 'sell' : 'buy', 'limit', this.positionSize, price)];
                     case 1:
                         res = _a.sent();
                         this.closeID = res.result.id;
                         this.closeTime = Date.now();
+                        if (cancelSec > 0) {
+                            setInterval(function () {
+                                if (_this.openID !== 0) {
+                                    _this.api.cancelAllOrder({
+                                        market: _this.marketName
+                                    });
+                                }
+                            }, cancelSec * 1000);
+                        }
                         return [2 /*return*/];
                 }
             });
@@ -132,12 +170,18 @@ var SinglePosition = /** @class */ (function () {
             if (order.remainingSize > 0 &&
                 order.status === 'complete') {
                 this.openID = 0;
+                if (this.onOpenOrderCanceled) {
+                    this.onOpenOrderCanceled();
+                }
             }
         }
         if (order.id === this.closeID) {
             if (order.remainingSize > 0 &&
                 order.status === 'complete') {
                 this.closeID = 0;
+                if (this.onCloseOrderCanceled) {
+                    this.onCloseOrderCanceled();
+                }
             }
         }
     };
@@ -148,10 +192,16 @@ var SinglePosition = /** @class */ (function () {
         if (this.openID === fill.orderId) {
             this.positionSize += fill.size;
             this.openID = 0;
+            if (this.onOpened) {
+                this.onOpened();
+            }
         }
         if (this.closeID === fill.orderId) {
             this.positionSize -= fill.size;
             this.closeID = 0;
+            if (this.onClosed) {
+                this.onClosed();
+            }
         }
     };
     return SinglePosition;
