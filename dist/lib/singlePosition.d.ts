@@ -8,7 +8,7 @@ export declare class SinglePosition {
     private closeID;
     private openTime;
     private closeTime;
-    private isLosscut;
+    isLosscut: boolean;
     openSide: 'buy' | 'sell';
     onOpened?: () => void;
     onClosed?: () => void;

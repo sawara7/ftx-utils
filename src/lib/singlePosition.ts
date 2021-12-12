@@ -7,7 +7,7 @@ export class SinglePosition {
     private closeID: number = 0;
     private openTime: number = 0;
     private closeTime: number = 0;
-    private isLosscut: boolean = false;
+    public isLosscut: boolean = false;
     public openSide: 'buy' | 'sell' = 'buy';
     public onOpened?: () => void;
     public onClosed?: () => void;
