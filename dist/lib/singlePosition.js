@@ -38,16 +38,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SinglePosition = void 0;
 var SinglePosition = /** @class */ (function () {
-    function SinglePosition(marketName, funds, openSide, api) {
+    function SinglePosition(marketName, funds, api) {
         this.marketName = marketName;
         this.funds = funds;
-        this.openSide = openSide;
         this.api = api;
         this.positionSize = 0;
         this.openID = 0;
         this.closeID = 0;
         this.openTime = 0;
         this.closeTime = 0;
+        this.openSide = 'buy';
+        this.openPrice = 0;
+        this.openFee = 0;
+        this.closePrice = 0;
+        this.closeFee = 0;
+        this.lastProfit = 0;
+        this.cumulativeProfit = 0;
     }
     SinglePosition.prototype.placeOrder = function (side, type, size, price) {
         return __awaiter(this, void 0, void 0, function () {
@@ -67,7 +73,7 @@ var SinglePosition = /** @class */ (function () {
             });
         });
     };
-    SinglePosition.prototype.openMarket = function (price) {
+    SinglePosition.prototype.openMarket = function (side, price) {
         return __awaiter(this, void 0, void 0, function () {
             var res;
             return __generator(this, function (_a) {
@@ -76,7 +82,8 @@ var SinglePosition = /** @class */ (function () {
                         if (this.openID > 0) {
                             throw Error('Position is already opened.');
                         }
-                        return [4 /*yield*/, this.placeOrder(this.openSide, 'market', this.funds / price)];
+                        this.openSide = side;
+                        return [4 /*yield*/, this.placeOrder(side, 'market', this.funds / price)];
                     case 1:
                         res = _a.sent();
                         this.openID = res.result.id;
@@ -86,7 +93,7 @@ var SinglePosition = /** @class */ (function () {
             });
         });
     };
-    SinglePosition.prototype.openLimit = function (price, cancelSec) {
+    SinglePosition.prototype.openLimit = function (side, price, cancelSec) {
         if (cancelSec === void 0) { cancelSec = 0; }
         return __awaiter(this, void 0, void 0, function () {
             var res;
@@ -97,9 +104,10 @@ var SinglePosition = /** @class */ (function () {
                         if (this.openID > 0) {
                             throw Error('Position is already opened.');
                         }
-                        return [4 /*yield*/, this.placeOrder(this.openSide, 'limit', this.funds / price, price)];
+                        return [4 /*yield*/, this.placeOrder(side, 'limit', this.funds / price, price)];
                     case 1:
                         res = _a.sent();
+                        this.openSide = side;
                         this.openID = res.result.id;
                         this.openTime = Date.now();
                         if (cancelSec > 0) {
@@ -193,6 +201,8 @@ var SinglePosition = /** @class */ (function () {
         }
         if (this.openID === fill.orderId) {
             this.positionSize += fill.size;
+            this.openPrice = fill.price;
+            this.openFee = fill.fee;
             this.openID = 0;
             if (this.onOpened) {
                 this.onOpened();
@@ -200,6 +210,13 @@ var SinglePosition = /** @class */ (function () {
         }
         if (this.closeID === fill.orderId) {
             this.positionSize -= fill.size;
+            this.closePrice = fill.price;
+            this.closeFee = fill.fee;
+            this.lastProfit = -(this.openFee + this.closeFee) +
+                this.openSide === 'buy' ?
+                (this.closePrice - this.openPrice) * fill.size :
+                (this.openPrice - this.closePrice) * fill.size;
+            this.cumulativeProfit += this.lastProfit;
             this.closeID = 0;
             if (this.onClosed) {
                 this.onClosed();
