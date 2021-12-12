@@ -8,7 +8,8 @@ export declare class SinglePosition {
     private closeID;
     private openTime;
     private closeTime;
-    private openSide;
+    private isLosscut;
+    openSide: 'buy' | 'sell';
     onOpened?: () => void;
     onClosed?: () => void;
     onOpenOrderCanceled?: () => void;
@@ -27,6 +28,7 @@ export declare class SinglePosition {
     closeLimit(price: number, cancelSec?: number): Promise<void>;
     updateOrder(order: wsOrder): void;
     updateFill(fill: wsFill): void;
+    losscut(): void;
     get enabledOpen(): Boolean;
     get enabledClose(): Boolean;
 }

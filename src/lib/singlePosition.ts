@@ -7,7 +7,8 @@ export class SinglePosition {
     private closeID: number = 0;
     private openTime: number = 0;
     private closeTime: number = 0;
-    private openSide: 'buy' | 'sell' = 'buy';
+    private isLosscut: boolean = false;
+    public openSide: 'buy' | 'sell' = 'buy';
     public onOpened?: () => void;
     public onClosed?: () => void;
     public onOpenOrderCanceled?: () => void;
@@ -129,6 +130,11 @@ export class SinglePosition {
                 if (this.onCloseOrderCanceled){
                     this.onCloseOrderCanceled()
                 }
+                if (this.isLosscut && this.positionSize > 0) {
+                    this.closeMarket()
+                }else if (this.isLosscut && this.positionSize === 0){
+                    this.isLosscut = false
+                }
             }
         }
     }
@@ -156,9 +162,19 @@ export class SinglePosition {
                     (this.openPrice - this.closePrice) * fill.size
             this.cumulativeProfit += this.lastProfit
             this.closeID = 0
+            this.isLosscut = false
             if (this.onClosed){
                 this.onClosed()
             }
+        }
+    }
+
+    public losscut() {
+        this.isLosscut = true
+        if (this.closeID > 0){
+            this.api.cancelAllOrder({
+                market: this.marketName
+            })
         }
     }
 

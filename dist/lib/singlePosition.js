@@ -47,6 +47,7 @@ var SinglePosition = /** @class */ (function () {
         this.closeID = 0;
         this.openTime = 0;
         this.closeTime = 0;
+        this.isLosscut = false;
         this.openSide = 'buy';
         this.openPrice = 0;
         this.openFee = 0;
@@ -192,6 +193,12 @@ var SinglePosition = /** @class */ (function () {
                 if (this.onCloseOrderCanceled) {
                     this.onCloseOrderCanceled();
                 }
+                if (this.isLosscut && this.positionSize > 0) {
+                    this.closeMarket();
+                }
+                else if (this.isLosscut && this.positionSize === 0) {
+                    this.isLosscut = false;
+                }
             }
         }
     };
@@ -218,9 +225,18 @@ var SinglePosition = /** @class */ (function () {
                 (this.openPrice - this.closePrice) * fill.size;
             this.cumulativeProfit += this.lastProfit;
             this.closeID = 0;
+            this.isLosscut = false;
             if (this.onClosed) {
                 this.onClosed();
             }
+        }
+    };
+    SinglePosition.prototype.losscut = function () {
+        this.isLosscut = true;
+        if (this.closeID > 0) {
+            this.api.cancelAllOrder({
+                market: this.marketName
+            });
         }
     };
     Object.defineProperty(SinglePosition.prototype, "enabledOpen", {
