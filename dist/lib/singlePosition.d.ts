@@ -29,6 +29,7 @@ export declare class SinglePosition {
     updateOrder(order: wsOrder): void;
     updateFill(fill: wsFill): void;
     losscut(): void;
+    cancel(): void;
     get enabledOpen(): Boolean;
     get enabledClose(): Boolean;
 }

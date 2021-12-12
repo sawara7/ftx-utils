@@ -50,9 +50,14 @@ export class SinglePosition {
         }
         this.openSide = side
         this.openID = 1 // lock
-        const res = await this.placeOrder(side, 'market', this.funds/price)
-        this.openID = res.result.id
-        this.openTime = Date.now()
+        try {
+            const res = await this.placeOrder(side, 'market', this.funds/price)
+            this.openID = res.result.id
+            this.openTime = Date.now()
+        } catch(e) {
+            console.log(e)
+            this.openID = 0
+        }
     }
 
     public async openLimit(side: 'buy' | 'sell', price: number, cancelSec: number = 0) {
@@ -60,18 +65,22 @@ export class SinglePosition {
             throw Error('Position is already opened.')
         }
         this.openID = 1 // lock
-        const res = await this.placeOrder(side, 'limit', this.funds/price, price)
-        this.openSide = side
-        this.openID = res.result.id
-        this.openTime = Date.now()
-        if (cancelSec > 0) {
-            setInterval(()=>{
-                if (this.openID !== 0) {
-                    this.api.cancelAllOrder({
-                        market: this.marketName
-                    })
-                }
-            }, cancelSec * 1000)
+        try {
+            const res = await this.placeOrder(side, 'limit', this.funds/price, price)
+            this.openSide = side
+            this.openID = res.result.id
+            this.openTime = Date.now()
+            if (cancelSec > 0) {
+                setInterval(()=>{
+                    if (this.openID !== 0) {
+                        this.api.cancelAllOrder({
+                            market: this.marketName
+                        })
+                    }
+                }, cancelSec * 1000)
+            }
+        } catch(e) {
+            this.openID = 0
         }
     }
 
@@ -80,12 +89,16 @@ export class SinglePosition {
             throw Error('Position is already closed.')
         }
         this.closeID = 1 // lock
-        const res = await this.placeOrder(
-            this.openSide === 'buy'? 'sell': 'buy',
-            'market',
-            this.positionSize)
-        this.closeID = res.result.id
-        this.closeTime = Date.now()
+        try {
+            const res = await this.placeOrder(
+                this.openSide === 'buy'? 'sell': 'buy',
+                'market',
+                this.positionSize)
+            this.closeID = res.result.id
+            this.closeTime = Date.now()
+        } catch(e) {
+            this.closeID = 0
+        }
     }
 
     public async closeLimit(price: number, cancelSec: number = 0) {
@@ -93,21 +106,25 @@ export class SinglePosition {
             throw Error('Position is already closed.')
         }
         this.closeID = 1
-        const res = await this.placeOrder(
-            this.openSide === 'buy'? 'sell': 'buy',
-            'limit',
-            this.positionSize,
-            price)
-        this.closeID = res.result.id
-        this.closeTime = Date.now()
-        if (cancelSec > 0) {
-            setInterval(()=>{
-                if (this.openID !== 0) {
-                    this.api.cancelAllOrder({
-                        market: this.marketName
-                    })
-                }
-            }, cancelSec * 1000)
+        try {
+            const res = await this.placeOrder(
+                this.openSide === 'buy'? 'sell': 'buy',
+                'limit',
+                this.positionSize,
+                price)
+            this.closeID = res.result.id
+            this.closeTime = Date.now()
+            if (cancelSec > 0) {
+                setInterval(()=>{
+                    if (this.openID !== 0) {
+                        this.api.cancelAllOrder({
+                            market: this.marketName
+                        })
+                    }
+                }, cancelSec * 1000)
+            }
+        } catch(e) {
+            this.closeID = 0
         }
     }
 
@@ -176,6 +193,14 @@ export class SinglePosition {
     public losscut() {
         this.isLosscut = true
         if (this.closeID > 0){
+            this.api.cancelAllOrder({
+                market: this.marketName
+            })
+        }
+    }
+
+    public cancel() {
+        if (this.closeID > 0 || this.openID > 0){
             this.api.cancelAllOrder({
                 market: this.marketName
             })
