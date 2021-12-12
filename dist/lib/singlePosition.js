@@ -84,6 +84,7 @@ var SinglePosition = /** @class */ (function () {
                             throw Error('Position is already opened.');
                         }
                         this.openSide = side;
+                        this.openID = 1; // lock
                         return [4 /*yield*/, this.placeOrder(side, 'market', this.funds / price)];
                     case 1:
                         res = _a.sent();
@@ -105,6 +106,7 @@ var SinglePosition = /** @class */ (function () {
                         if (this.openID > 0) {
                             throw Error('Position is already opened.');
                         }
+                        this.openID = 1; // lock
                         return [4 /*yield*/, this.placeOrder(side, 'limit', this.funds / price, price)];
                     case 1:
                         res = _a.sent();
@@ -134,6 +136,7 @@ var SinglePosition = /** @class */ (function () {
                         if (this.closeID > 0) {
                             throw Error('Position is already closed.');
                         }
+                        this.closeID = 1; // lock
                         return [4 /*yield*/, this.placeOrder(this.openSide === 'buy' ? 'sell' : 'buy', 'market', this.positionSize)];
                     case 1:
                         res = _a.sent();
@@ -155,6 +158,7 @@ var SinglePosition = /** @class */ (function () {
                         if (this.closeID > 0) {
                             throw Error('Position is already closed.');
                         }
+                        this.closeID = 1;
                         return [4 /*yield*/, this.placeOrder(this.openSide === 'buy' ? 'sell' : 'buy', 'limit', this.positionSize, price)];
                     case 1:
                         res = _a.sent();

@@ -49,6 +49,7 @@ export class SinglePosition {
             throw Error('Position is already opened.')
         }
         this.openSide = side
+        this.openID = 1 // lock
         const res = await this.placeOrder(side, 'market', this.funds/price)
         this.openID = res.result.id
         this.openTime = Date.now()
@@ -58,6 +59,7 @@ export class SinglePosition {
         if (this.openID > 0) {
             throw Error('Position is already opened.')
         }
+        this.openID = 1 // lock
         const res = await this.placeOrder(side, 'limit', this.funds/price, price)
         this.openSide = side
         this.openID = res.result.id
@@ -77,6 +79,7 @@ export class SinglePosition {
         if (this.closeID > 0) {
             throw Error('Position is already closed.')
         }
+        this.closeID = 1 // lock
         const res = await this.placeOrder(
             this.openSide === 'buy'? 'sell': 'buy',
             'market',
@@ -89,6 +92,7 @@ export class SinglePosition {
         if (this.closeID > 0) {
             throw Error('Position is already closed.')
         }
+        this.closeID = 1
         const res = await this.placeOrder(
             this.openSide === 'buy'? 'sell': 'buy',
             'limit',
