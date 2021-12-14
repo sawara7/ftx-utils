@@ -121,7 +121,7 @@ export class SinglePosition {
             this.closeTime = Date.now()
             if (cancelSec > 0) {
                 setInterval(()=>{
-                    if (this.openID !== 0) {
+                    if (this.closeID !== 0) {
                         this.api.cancelAllOrder({
                             market: this.marketName
                         })
