@@ -22,9 +22,9 @@ export declare class SinglePosition {
     constructor(marketName: string, funds: number, api: PrivateApiClass);
     private placeOrder;
     openMarket(side: 'buy' | 'sell', price: number): Promise<void>;
-    openLimit(side: 'buy' | 'sell', price: number, cancelSec?: number): Promise<void>;
+    openLimit(side: 'buy' | 'sell', price: number, postOnly?: boolean, cancelSec?: number): Promise<void>;
     closeMarket(): Promise<void>;
-    closeLimit(price: number, cancelSec?: number): Promise<void>;
+    closeLimit(price: number, postOnly?: boolean, cancelSec?: number): Promise<void>;
     updateOrder(order: wsOrder): void;
     updateFill(fill: wsFill): void;
     get profit(): number;

@@ -28,9 +28,9 @@ class SinglePosition {
         this.cumulativeFee = 0;
         this.cumulativeProfit = 0;
     }
-    placeOrder(side, type, size, price) {
+    placeOrder(side, type, size, price, postOnly) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.api.placeOrder({
+            const p = {
                 market: this.marketName,
                 side: side,
                 price: price ? price : null,
@@ -38,7 +38,11 @@ class SinglePosition {
                 size: size,
                 reduceOnly: false,
                 ioc: false
-            });
+            };
+            if (postOnly) {
+                p.postOnly = true;
+            }
+            return yield this.api.placeOrder(p);
         });
     }
     openMarket(side, price) {
@@ -59,14 +63,14 @@ class SinglePosition {
             }
         });
     }
-    openLimit(side, price, cancelSec = 0) {
+    openLimit(side, price, postOnly = true, cancelSec = 0) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.openID > 0) {
                 throw Error('Position is already opened.');
             }
             this.openID = 1; // lock
             try {
-                const res = yield this.placeOrder(side, 'limit', this.funds / price, price);
+                const res = yield this.placeOrder(side, 'limit', this.funds / price, price, postOnly);
                 this.openSide = side;
                 this.openID = res.result.id;
                 this.openTime = Date.now();
@@ -101,14 +105,14 @@ class SinglePosition {
             }
         });
     }
-    closeLimit(price, cancelSec = 0) {
+    closeLimit(price, postOnly = true, cancelSec = 0) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.closeID > 0) {
                 throw Error('Position is already closed.');
             }
             this.closeID = 1;
             try {
-                const res = yield this.placeOrder(this.openSide === 'buy' ? 'sell' : 'buy', 'limit', this.currentSize, price);
+                const res = yield this.placeOrder(this.openSide === 'buy' ? 'sell' : 'buy', 'limit', this.currentSize, price, postOnly);
                 this.closeID = res.result.id;
                 this.closeTime = Date.now();
                 if (cancelSec > 0) {

@@ -1,4 +1,4 @@
-import { PrivateApiClass, wsFill, wsOrder } from "..";
+import { PlaceOrderRequest, PrivateApiClass, wsFill, wsOrder } from "..";
 import { Response, PlaceOrderResponce } from "..";
 
 export class SinglePosition {
@@ -30,9 +30,10 @@ export class SinglePosition {
         side: 'buy' | 'sell',
         type: 'limit' | 'market',
         size: number,
-        price?: number
+        price?: number,
+        postOnly?: boolean
     ): Promise<Response<PlaceOrderResponce>> {
-        return await this.api.placeOrder({
+        const p: PlaceOrderRequest = {
             market: this.marketName,
             side: side,
             price: price ? price : null,
@@ -40,7 +41,11 @@ export class SinglePosition {
             size: size,
             reduceOnly: false,
             ioc: false
-        });
+        }
+        if (postOnly) {
+            p.postOnly = true
+        }
+        return await this.api.placeOrder(p);
     }
 
     public async openMarket(side: 'buy' | 'sell', price: number) {
@@ -59,13 +64,13 @@ export class SinglePosition {
         }
     }
 
-    public async openLimit(side: 'buy' | 'sell', price: number, cancelSec: number = 0) {
+    public async openLimit(side: 'buy' | 'sell', price: number, postOnly: boolean = true, cancelSec: number = 0) {
         if (this.openID > 0) {
             throw Error('Position is already opened.')
         }
         this.openID = 1 // lock
         try {
-            const res = await this.placeOrder(side, 'limit', this.funds/price, price)
+            const res = await this.placeOrder(side, 'limit', this.funds/price, price, postOnly)
             this.openSide = side
             this.openID = res.result.id
             this.openTime = Date.now()
@@ -100,7 +105,7 @@ export class SinglePosition {
         }
     }
 
-    public async closeLimit(price: number, cancelSec: number = 0) {
+    public async closeLimit(price: number, postOnly: boolean = true, cancelSec: number = 0) {
         if (this.closeID > 0) {
             throw Error('Position is already closed.')
         }
@@ -110,7 +115,8 @@ export class SinglePosition {
                 this.openSide === 'buy'? 'sell': 'buy',
                 'limit',
                 this.currentSize,
-                price)
+                price,
+                postOnly)
             this.closeID = res.result.id
             this.closeTime = Date.now()
             if (cancelSec > 0) {
