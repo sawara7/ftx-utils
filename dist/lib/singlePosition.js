@@ -75,7 +75,7 @@ class SinglePosition {
                 this.openID = res.result.id;
                 this.openTime = Date.now();
                 if (cancelSec > 0) {
-                    setInterval(() => {
+                    setTimeout(() => {
                         if (this.openID !== 0) {
                             this.api.cancelAllOrder({
                                 market: this.marketName
@@ -116,7 +116,7 @@ class SinglePosition {
                 this.closeID = res.result.id;
                 this.closeTime = Date.now();
                 if (cancelSec > 0) {
-                    setInterval(() => {
+                    setTimeout(() => {
                         if (this.closeID !== 0) {
                             this.api.cancelAllOrder({
                                 market: this.marketName
