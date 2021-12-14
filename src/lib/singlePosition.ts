@@ -2,7 +2,8 @@ import { PrivateApiClass, wsFill, wsOrder } from "..";
 import { Response, PlaceOrderResponce } from "..";
 
 export class SinglePosition {
-    public positionSize: number = 0;
+    private targetSize: number = 0;
+    public currentSize: number = 0;
     private openID: number = 0;
     private closeID: number = 0;
     private openTime: number = 0;
@@ -14,11 +15,9 @@ export class SinglePosition {
     public onOpenOrderCanceled?: () => void;
     public onCloseOrderCanceled?: () => void;
     public openPrice: number = 0;
-    public openFee: number = 0;
     public closePrice: number = 0;
-    public closeFee: number = 0;
-    public lastProfit: number = 0;
-    public cumulativeProfit: number = 0;
+    private cumulativeFee: number = 0;
+    private cumulativeProfit: number = 0;
     constructor(
         private marketName: string,
         private funds: number,
@@ -93,7 +92,7 @@ export class SinglePosition {
             const res = await this.placeOrder(
                 this.openSide === 'buy'? 'sell': 'buy',
                 'market',
-                this.positionSize)
+                this.currentSize)
             this.closeID = res.result.id
             this.closeTime = Date.now()
         } catch(e) {
@@ -110,7 +109,7 @@ export class SinglePosition {
             const res = await this.placeOrder(
                 this.openSide === 'buy'? 'sell': 'buy',
                 'limit',
-                this.positionSize,
+                this.currentSize,
                 price)
             this.closeID = res.result.id
             this.closeTime = Date.now()
@@ -129,65 +128,66 @@ export class SinglePosition {
     }
 
     public updateOrder(order: wsOrder) {
-        if (order.id === this.openID) {
-            if (
-                order.filledSize !== order.size &&
-                order.status === 'closed'
-            ){
-                this.openID = 0
-                this.positionSize += order.filledSize
-                if (this.onOpenOrderCanceled){
+        if (order.id === this.openID && order.status === 'closed') {
+            this.openID = 0
+            if (order.filledSize > 0) {
+                this.currentSize += order.filledSize
+                this.targetSize += order.filledSize
+                this.openPrice = order.avgFillPrice? order.avgFillPrice: order.price   
+            }
+            if (order.filledSize !== order.size) {
+                if (this.onOpenOrderCanceled) {
                     this.onOpenOrderCanceled()
                 }
             }
+            if (order.filledSize === order.size) {
+                if (this.onOpened){
+                    this.onOpened()
+                }
+            }
         }
-        if (order.id === this.closeID) {
-            if (
-                order.filledSize !== order.size &&
-                order.status === 'closed'
-            ){
-                this.closeID = 0
-                this.positionSize -= order.filledSize
+        if (order.id === this.closeID && order.status === 'closed') {
+            this.closeID = 0
+            if (order.filledSize > 0) {
+                this.currentSize -= order.filledSize
+                this.closePrice = order.avgFillPrice? order.avgFillPrice: order.price
+            }
+            if (order.filledSize !== order.size) {
                 if (this.onCloseOrderCanceled){
                     this.onCloseOrderCanceled()
                 }
-                if (this.isLosscut && this.positionSize > 0) {
-                    this.closeMarket()
-                }else if (this.isLosscut && this.positionSize === 0){
-                    this.isLosscut = false
+            }
+
+            if (this.isLosscut && this.currentSize > 0) {
+                this.closeMarket()
+            } else if (this.isLosscut && this.currentSize === 0){
+                this.isLosscut = false
+            }
+
+            if (order.filledSize === order.size) {
+                this.isLosscut = false
+                this.cumulativeProfit += this.targetSize * 
+                    (this.openSide === 'buy' ?
+                        (this.closePrice - this.openPrice):
+                        (this.openPrice - this.closePrice)
+                    )
+                this.targetSize = 0
+                this.currentSize = 0
+                if (this.onClosed){
+                    this.onClosed()
                 }
             }
         }
     }
 
     public updateFill(fill: wsFill) {
-        if (this.openID === 0 && this.closeID === 0) {
-            return
+        if (fill.market === this.marketName) {
+            this.cumulativeFee += fill.fee
         }
-        if (this.openID === fill.orderId) {
-            this.positionSize += fill.size
-            this.openPrice = fill.price
-            this.openFee = fill.fee
-            this.openID = 0
-            if (this.onOpened){
-                this.onOpened()
-            }
-        }
-        if (this.closeID === fill.orderId) {
-            this.positionSize -= fill.size
-            this.closePrice = fill.price
-            this.closeFee = fill.fee
-            this.lastProfit = - (this.openFee + this.closeFee) +
-                this.openSide === 'buy'?
-                    (this.closePrice - this.openPrice) * fill.size:
-                    (this.openPrice - this.closePrice) * fill.size
-            this.cumulativeProfit += this.lastProfit
-            this.closeID = 0
-            this.isLosscut = false
-            if (this.onClosed){
-                this.onClosed()
-            }
-        }
+    }
+
+    get profit(): number {
+        return this.cumulativeProfit - this.cumulativeFee
     }
 
     public losscut() {
@@ -210,12 +210,12 @@ export class SinglePosition {
     get enabledOpen(): Boolean {
         return  this.openID === 0 &&
                 this.closeID === 0 &&
-                this.positionSize === 0
+                this.currentSize === 0
     }
 
     get enabledClose(): Boolean {
         return  this.openID !== 0 &&
                 this.closeID === 0 &&
-                this.positionSize > 0
+                this.currentSize > 0
     }
 }

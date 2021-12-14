@@ -20,41 +20,40 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WebsocketAPI = void 0;
-var ws_1 = require("ws");
-var crypto = __importStar(require("crypto"));
-var WebsocketAPI = /** @class */ (function () {
-    function WebsocketAPI() {
-        var _this = this;
-        this.onOpen = function () {
-            _this.socket.send(JSON.stringify({ 'op': 'ping' }));
-            setInterval(function () {
-                _this.socket.send(JSON.stringify({ 'op': 'ping' }));
+const ws_1 = require("ws");
+const crypto = __importStar(require("crypto"));
+class WebsocketAPI {
+    constructor() {
+        this.onOpen = () => {
+            this.socket.send(JSON.stringify({ 'op': 'ping' }));
+            setInterval(() => {
+                this.socket.send(JSON.stringify({ 'op': 'ping' }));
             }, 15 * 1000);
         };
-        this.onError = function () {
+        this.onError = () => {
             console.log('サーバーへの接続に失敗しました');
         };
-        this.onMessage = function (event) {
-            var d = JSON.parse(event.data.toString());
-            var t = d;
+        this.onMessage = (event) => {
+            const d = JSON.parse(event.data.toString());
+            const t = d;
             if (t.channel === 'trades') {
-                if (_this.onTrades && t.data && t.data.length > 0) {
-                    _this.onTrades(t.data);
+                if (this.onTrades && t.data && t.data.length > 0) {
+                    this.onTrades(t.data);
                 }
             }
             else if (t.channel === 'ticker') {
-                if (_this.onTicker && t.data) {
-                    _this.onTicker(t.data);
+                if (this.onTicker && t.data) {
+                    this.onTicker(t.data);
                 }
             }
             else if (t.channel === 'fills') {
-                if (_this.onFill && t.data) {
-                    _this.onFill(t.data);
+                if (this.onFill && t.data) {
+                    this.onFill(t.data);
                 }
             }
             else if (t.channel === 'orders') {
-                if (_this.onOrder && t.data) {
-                    _this.onOrder(t.data);
+                if (this.onOrder && t.data) {
+                    this.onOrder(t.data);
                 }
             }
             else if (t.channel === 'pong') {
@@ -69,8 +68,8 @@ var WebsocketAPI = /** @class */ (function () {
         this.socket.addEventListener('open', this.onOpen);
         this.socket.addEventListener('message', this.onMessage);
     }
-    WebsocketAPI.prototype.login = function (apiKey, secret, subaccount) {
-        var t = Date.now();
+    login(apiKey, secret, subaccount) {
+        const t = Date.now();
         this.socket.send(JSON.stringify({
             'op': 'login',
             'args': {
@@ -84,20 +83,19 @@ var WebsocketAPI = /** @class */ (function () {
                 'subaccount': subaccount
             }
         }));
-    };
-    WebsocketAPI.prototype.subscribePublic = function (ch, market) {
+    }
+    subscribePublic(ch, market) {
         this.socket.send(JSON.stringify({
             'op': 'subscribe',
             'channel': ch,
             'market': market
         }));
-    };
-    WebsocketAPI.prototype.subscribePricate = function (ch) {
+    }
+    subscribePricate(ch) {
         this.socket.send(JSON.stringify({
             'op': 'subscribe',
             'channel': ch
         }));
-    };
-    return WebsocketAPI;
-}());
+    }
+}
 exports.WebsocketAPI = WebsocketAPI;

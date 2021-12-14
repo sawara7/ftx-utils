@@ -3,7 +3,8 @@ export declare class SinglePosition {
     private marketName;
     private funds;
     private api;
-    positionSize: number;
+    private targetSize;
+    currentSize: number;
     private openID;
     private closeID;
     private openTime;
@@ -15,11 +16,9 @@ export declare class SinglePosition {
     onOpenOrderCanceled?: () => void;
     onCloseOrderCanceled?: () => void;
     openPrice: number;
-    openFee: number;
     closePrice: number;
-    closeFee: number;
-    lastProfit: number;
-    cumulativeProfit: number;
+    private cumulativeFee;
+    private cumulativeProfit;
     constructor(marketName: string, funds: number, api: PrivateApiClass);
     private placeOrder;
     openMarket(side: 'buy' | 'sell', price: number): Promise<void>;
@@ -28,6 +27,7 @@ export declare class SinglePosition {
     closeLimit(price: number, cancelSec?: number): Promise<void>;
     updateOrder(order: wsOrder): void;
     updateFill(fill: wsFill): void;
+    get profit(): number;
     losscut(): void;
     cancel(): void;
     get enabledOpen(): Boolean;
