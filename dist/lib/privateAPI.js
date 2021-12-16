@@ -79,6 +79,14 @@ class PrivateApiClass extends baseAPI_1.BaseApiClass {
         const path = '/api/orders';
         return this.delete(path, params);
     }
+    cancelOrder(id) {
+        const path = '/api/orders/' + id;
+        return this.delete(path, {});
+    }
+    cancelOrderByClientID(id) {
+        const path = '/api/orders/by_client_id/' + id;
+        return this.delete(path, {});
+    }
     get(path, query) {
         let queryPath = path;
         if (query && Object.keys(query).length > 0) {

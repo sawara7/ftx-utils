@@ -77,7 +77,7 @@ export class WebsocketAPI {
         this.socket.send(JSON.stringify({'op': 'ping'}))
         setInterval(() => {
             this.socket.send(JSON.stringify({'op': 'ping'}))
-        }, 15 * 1000)
+        }, 5 * 1000)
     }
 
     private onError = () => {

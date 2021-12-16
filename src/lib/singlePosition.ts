@@ -198,18 +198,26 @@ export class SinglePosition {
 
     public losscut() {
         this.isLosscut = true
-        if (this.closeID > 0){
+        this.cancelCloseOrder()
+    }
+
+    public cancelAll() {
+        if (this.closeID > 0 || this.openID > 0){
             this.api.cancelAllOrder({
                 market: this.marketName
             })
         }
     }
 
-    public cancel() {
-        if (this.closeID > 0 || this.openID > 0){
-            this.api.cancelAllOrder({
-                market: this.marketName
-            })
+    public cancelOpenOrder() {
+        if (this.openID > 0){
+            this.api.cancelOrder(this.openID)
+        }
+    }
+
+    public cancelCloseOrder() {
+        if (this.closeID > 0){
+            this.api.cancelOrder(this.closeID)
         }
     }
 

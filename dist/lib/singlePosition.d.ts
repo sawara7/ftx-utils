@@ -29,7 +29,9 @@ export declare class SinglePosition {
     updateFill(fill: wsFill): void;
     get profit(): number;
     losscut(): void;
-    cancel(): void;
+    cancelAll(): void;
+    cancelOpenOrder(): void;
+    cancelCloseOrder(): void;
     get enabledOpen(): Boolean;
     get enabledClose(): Boolean;
 }

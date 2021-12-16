@@ -190,17 +190,23 @@ class SinglePosition {
     }
     losscut() {
         this.isLosscut = true;
-        if (this.closeID > 0) {
+        this.cancelCloseOrder();
+    }
+    cancelAll() {
+        if (this.closeID > 0 || this.openID > 0) {
             this.api.cancelAllOrder({
                 market: this.marketName
             });
         }
     }
-    cancel() {
-        if (this.closeID > 0 || this.openID > 0) {
-            this.api.cancelAllOrder({
-                market: this.marketName
-            });
+    cancelOpenOrder() {
+        if (this.openID > 0) {
+            this.api.cancelOrder(this.openID);
+        }
+    }
+    cancelCloseOrder() {
+        if (this.closeID > 0) {
+            this.api.cancelOrder(this.closeID);
         }
     }
     get enabledOpen() {

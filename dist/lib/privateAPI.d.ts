@@ -19,6 +19,8 @@ export declare class PrivateApiClass extends BaseApiClass {
     getOrderHistory(params: GetOrderHistoryRequest): Promise<Response<GetOrderHistoryResponse[]>>;
     requestWithdrawal(params: WithdrawalRequest): Promise<Response<WithdrawalResponse>>;
     cancelAllOrder(params: CancelAllOrdersRequest): Promise<Response<string>>;
+    cancelOrder(id: number): Promise<Response<string>>;
+    cancelOrderByClientID(id: string): Promise<Response<string>>;
     get<T>(path: string, query?: {}): Promise<any>;
     post<T>(path: string, body: {}): Promise<any>;
     delete<T>(path: string, query?: {}): Promise<any>;

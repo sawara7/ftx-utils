@@ -94,6 +94,16 @@ export class PrivateApiClass extends BaseApiClass {
         return this.delete(path, params)
     }
 
+    public cancelOrder(id: number): Promise<Response<string>> {
+        const path = '/api/orders/' + id
+        return this.delete(path, {})
+    }
+
+    public cancelOrderByClientID(id: string): Promise<Response<string>> {
+        const path = '/api/orders/by_client_id/' + id
+        return this.delete(path, {})
+    }
+
     get<T>(path: string, query?: {}) {
         let queryPath = path
         if (query && Object.keys(query).length > 0) {
