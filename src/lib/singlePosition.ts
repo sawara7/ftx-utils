@@ -69,6 +69,7 @@ export class SinglePosition {
         if (!SinglePosition.lastOrderTime[this.marketName]){
             SinglePosition.lastOrderTime[this.marketName] = 0
         }
+        console.log(SinglePosition.lastOrderTime)
         this.funds = params.funds
         this.api = params.api
         this.minOrderInterval = params.minOrderInterval || 200
