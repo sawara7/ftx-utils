@@ -55,6 +55,7 @@ class SinglePosition {
             }
             if (SinglePosition.lastOrderTime && SinglePosition.lastOrderTime[this.marketName]) {
                 const interval = Date.now() - SinglePosition.lastOrderTime[this.marketName];
+                console.log(interval);
                 if (interval > 0) {
                     if (interval < this.minOrderInterval) {
                         SinglePosition.lastOrderTime[this.marketName] += this.minOrderInterval;
