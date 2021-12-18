@@ -31,7 +31,7 @@ class SinglePosition {
         }
         this.marketName = params.marketName;
         if (!SinglePosition.lastOrderTime[this.marketName]) {
-            SinglePosition.lastOrderTime[this.marketName] = 0;
+            SinglePosition.lastOrderTime[this.marketName] = Date.now();
         }
         this.funds = params.funds;
         this.api = params.api;
