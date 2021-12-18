@@ -107,7 +107,6 @@ class PrivateApiClass extends baseAPI_1.BaseApiClass {
     makeHeader(method, path, body = '') {
         const ts = Date.now();
         const s = ts + method + path + (method === 'POST' ? body : '');
-        console.log(s);
         const sign = PrivateApiClass.toSha256(this.apiSecret, s);
         const header = {
             'FTX-KEY': this.apiKey,

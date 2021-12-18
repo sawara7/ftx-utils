@@ -43,13 +43,25 @@ export interface wsOrder {
     remainingSize: number;
     avgFillPrice: number;
 }
+export interface wsParameters {
+    pingIntervalSec?: number;
+    reconnectOnClose?: boolean;
+}
 export declare class WebsocketAPI {
     private socket;
-    onTrades: ((trades: wsTrade[]) => void) | undefined;
-    onTicker: ((ticer: wsTicker) => void) | undefined;
-    onFill: ((fill: wsFill) => void) | undefined;
-    onOrder: ((orders: wsOrder) => void) | undefined;
-    constructor();
+    private pingInterval;
+    private reconnect;
+    onTrades?: (trades: wsTrade[]) => void;
+    onTicker?: (ticer: wsTicker) => void;
+    onFill?: (fill: wsFill) => void;
+    onOrder?: (orders: wsOrder) => void;
+    onPong?: () => void;
+    onWebSocketOpen?: () => void;
+    onWebSocketClose?: () => void;
+    onWebSocketError?: () => void;
+    private pingIntervalID?;
+    constructor(params: wsParameters);
+    private initializeWebSocket;
     private onOpen;
     private onClose;
     private onError;

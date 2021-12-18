@@ -23,23 +23,28 @@ exports.WebsocketAPI = void 0;
 const ws_1 = require("ws");
 const crypto = __importStar(require("crypto"));
 class WebsocketAPI {
-    constructor() {
+    constructor(params) {
         this.onOpen = () => {
-            this.socket.send(JSON.stringify({ 'op': 'ping' }));
-            setInterval(() => {
+            this.pingIntervalID = setInterval(() => {
                 this.socket.send(JSON.stringify({ 'op': 'ping' }));
-            }, 5 * 1000);
+            }, this.pingInterval);
+            if (this.onWebSocketOpen) {
+                this.onWebSocketOpen();
+            }
         };
         this.onClose = () => {
-            console.log('close');
-            this.socket = new ws_1.WebSocket('wss://ftx.com/ws/');
-            this.socket.addEventListener('error', this.onError);
-            this.socket.addEventListener('open', this.onOpen);
-            this.socket.addEventListener('message', this.onMessage);
-            this.socket.addEventListener('close', this.onClose);
+            if (this.reconnect) {
+                this.socket = new ws_1.WebSocket('wss://ftx.com/ws/');
+                this.initializeWebSocket();
+            }
+            if (this.onWebSocketClose) {
+                this.onWebSocketClose();
+            }
         };
         this.onError = () => {
-            console.log('サーバーへの接続に失敗しました');
+            if (this.onWebSocketError) {
+                this.onWebSocketError();
+            }
         };
         this.onMessage = (event) => {
             const d = JSON.parse(event.data.toString());
@@ -65,13 +70,23 @@ class WebsocketAPI {
                 }
             }
             else if (t.channel === 'pong') {
-                console.log(event.data);
+                if (this.onPong) {
+                    this.onPong();
+                }
             }
             else {
                 console.log(event.data);
             }
         };
         this.socket = new ws_1.WebSocket('wss://ftx.com/ws/');
+        this.pingInterval = (params.pingIntervalSec || 5) * 1000;
+        this.reconnect = params.reconnectOnClose || false;
+        this.initializeWebSocket();
+    }
+    initializeWebSocket() {
+        if (this.pingIntervalID) {
+            clearInterval(this.pingIntervalID);
+        }
         this.socket.addEventListener('error', this.onError);
         this.socket.addEventListener('open', this.onOpen);
         this.socket.addEventListener('message', this.onMessage);

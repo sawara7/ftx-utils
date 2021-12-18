@@ -59,15 +59,38 @@ export interface wsOrder {
     avgFillPrice: number //0.2978
 }
 
+export interface wsParameters {
+    pingIntervalSec?: number
+    reconnectOnClose?: boolean
+}
 export class WebsocketAPI {
     private socket: WebSocket
-    public onTrades:((trades: wsTrade[]) => void) | undefined
-    public onTicker:((ticer: wsTicker) => void) | undefined
-    public onFill:((fill: wsFill) => void) | undefined
-    public onOrder:((orders: wsOrder) => void) | undefined
+    private pingInterval: number
+    private reconnect: boolean
+    // FTX Events
+    public onTrades?: (trades: wsTrade[]) => void
+    public onTicker?: (ticer: wsTicker) => void
+    public onFill?: (fill: wsFill) => void
+    public onOrder?:(orders: wsOrder) => void
+    public onPong?: () => void
+    // WebSocket Events
+    public onWebSocketOpen?: () => void
+    public onWebSocketClose?: () => void
+    public onWebSocketError?: () => void
+    // internal
+    private pingIntervalID?: NodeJS.Timeout
 
-    constructor() {
+    constructor(params: wsParameters) {
         this.socket = new WebSocket('wss://ftx.com/ws/')
+        this.pingInterval = (params.pingIntervalSec || 5) * 1000
+        this.reconnect = params.reconnectOnClose || false
+        this.initializeWebSocket()
+    }
+
+    private initializeWebSocket() {
+        if (this.pingIntervalID) {
+            clearInterval(this.pingIntervalID)
+        }
         this.socket.addEventListener('error', this.onError)
         this.socket.addEventListener('open', this.onOpen)
         this.socket.addEventListener('message', this.onMessage)
@@ -75,23 +98,28 @@ export class WebsocketAPI {
     }
 
     private onOpen = () => {
-        this.socket.send(JSON.stringify({'op': 'ping'}))
-        setInterval(() => {
+        this.pingIntervalID = setInterval(() => {
             this.socket.send(JSON.stringify({'op': 'ping'}))
-        }, 5 * 1000)
+        },  this.pingInterval)
+        if (this.onWebSocketOpen){
+            this.onWebSocketOpen()
+        }
     }
 
     private onClose = () => {
-        console.log('close')
-        this.socket = new WebSocket('wss://ftx.com/ws/')
-        this.socket.addEventListener('error', this.onError)
-        this.socket.addEventListener('open', this.onOpen)
-        this.socket.addEventListener('message', this.onMessage)
-        this.socket.addEventListener('close', this.onClose)
+        if (this.reconnect) {
+            this.socket = new WebSocket('wss://ftx.com/ws/')
+            this.initializeWebSocket()
+        }
+        if (this.onWebSocketClose){
+            this.onWebSocketClose()
+        }
     }
 
     private onError = () => {
-        console.log('サーバーへの接続に失敗しました')
+        if (this.onWebSocketError){
+            this.onWebSocketError()
+        }
     }
 
     private onMessage = (event: MessageEvent) => {
@@ -114,7 +142,9 @@ export class WebsocketAPI {
                 this.onOrder(t.data as wsOrder)
             }
         }else if (t.channel === 'pong') {
-            console.log(event.data)
+            if (this.onPong) {
+                this.onPong()
+            }
         }else{
             console.log(event.data)
         }
