@@ -69,7 +69,7 @@ class WebsocketAPI {
                     this.onOrder(t.data);
                 }
             }
-            else if (t.channel === 'pong') {
+            else if (t.type === 'pong') {
                 if (this.onPong) {
                     this.onPong();
                 }

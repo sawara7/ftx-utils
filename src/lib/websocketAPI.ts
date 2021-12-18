@@ -141,7 +141,7 @@ export class WebsocketAPI {
             if (this.onOrder && t.data) {
                 this.onOrder(t.data as wsOrder)
             }
-        }else if (t.channel === 'pong') {
+        }else if (t.type === 'pong') {
             if (this.onPong) {
                 this.onPong()
             }

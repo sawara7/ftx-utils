@@ -90,10 +90,8 @@ export class SinglePosition {
         if (postOnly) {
             p.postOnly = true
         }
-        console.log(SinglePosition.lastOrderTime)
         if (SinglePosition.lastOrderTime && SinglePosition.lastOrderTime[this.marketName]) {
             const interval = Date.now() - SinglePosition.lastOrderTime[this.marketName]
-            console.log(interval)
             if (interval > 0) {
                 if (interval < this.minOrderInterval) {
                     SinglePosition.lastOrderTime[this.marketName] += this.minOrderInterval 
