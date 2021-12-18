@@ -56,10 +56,10 @@ export class SinglePosition {
     private cumulativeProfit: number = 0
 
     // Events
-    public onOpened?: () => void
-    public onClosed?: () => void
-    public onOpenOrderCanceled?: () => void
-    public onCloseOrderCanceled?: () => void
+    public onOpened?: (pos: SinglePosition) => void
+    public onClosed?: (pos: SinglePosition) => void
+    public onOpenOrderCanceled?: (pos: SinglePosition) => void
+    public onCloseOrderCanceled?: (pos: SinglePosition) => void
 
     constructor(params: SinglePositionParameters){
         if (!SinglePosition.lastOrderTime){
@@ -262,12 +262,12 @@ export class SinglePosition {
             }
             if (order.filledSize !== order.size) {
                 if (this.onOpenOrderCanceled) {
-                    this.onOpenOrderCanceled()
+                    this.onOpenOrderCanceled(this)
                 }
             }
             if (order.filledSize === order.size) {
                 if (this.onOpened){
-                    this.onOpened()
+                    this.onOpened(this)
                 }
             }
         }
@@ -279,7 +279,7 @@ export class SinglePosition {
             }
             if (order.filledSize !== order.size) {
                 if (this.onCloseOrderCanceled){
-                    this.onCloseOrderCanceled()
+                    this.onCloseOrderCanceled(this)
                 }
             }
 
@@ -299,7 +299,7 @@ export class SinglePosition {
                 this.initialSize = 0
                 this.currentSize = 0
                 if (this.onClosed){
-                    this.onClosed()
+                    this.onClosed(this)
                 }
             }
         }

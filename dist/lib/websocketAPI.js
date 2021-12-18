@@ -115,7 +115,7 @@ class WebsocketAPI {
             'market': market
         }));
     }
-    subscribePricate(ch) {
+    subscribePrivate(ch) {
         this.socket.send(JSON.stringify({
             'op': 'subscribe',
             'channel': ch

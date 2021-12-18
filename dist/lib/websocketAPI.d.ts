@@ -68,5 +68,5 @@ export declare class WebsocketAPI {
     private onMessage;
     login(apiKey: string, secret: string, subaccount: string): void;
     subscribePublic(ch: "trades" | "ticker", market: string): void;
-    subscribePricate(ch: "fills" | "orders"): void;
+    subscribePrivate(ch: "fills" | "orders"): void;
 }

@@ -217,12 +217,12 @@ class SinglePosition {
             }
             if (order.filledSize !== order.size) {
                 if (this.onOpenOrderCanceled) {
-                    this.onOpenOrderCanceled();
+                    this.onOpenOrderCanceled(this);
                 }
             }
             if (order.filledSize === order.size) {
                 if (this.onOpened) {
-                    this.onOpened();
+                    this.onOpened(this);
                 }
             }
         }
@@ -234,7 +234,7 @@ class SinglePosition {
             }
             if (order.filledSize !== order.size) {
                 if (this.onCloseOrderCanceled) {
-                    this.onCloseOrderCanceled();
+                    this.onCloseOrderCanceled(this);
                 }
             }
             if (this.isLosscut && this.currentSize > 0) {
@@ -252,7 +252,7 @@ class SinglePosition {
                 this.initialSize = 0;
                 this.currentSize = 0;
                 if (this.onClosed) {
-                    this.onClosed();
+                    this.onClosed(this);
                 }
             }
         }

@@ -40,10 +40,10 @@ export declare class SinglePosition {
     currentClosePrice: number;
     private cumulativeFee;
     private cumulativeProfit;
-    onOpened?: () => void;
-    onClosed?: () => void;
-    onOpenOrderCanceled?: () => void;
-    onCloseOrderCanceled?: () => void;
+    onOpened?: (pos: SinglePosition) => void;
+    onClosed?: (pos: SinglePosition) => void;
+    onOpenOrderCanceled?: (pos: SinglePosition) => void;
+    onCloseOrderCanceled?: (pos: SinglePosition) => void;
     constructor(params: SinglePositionParameters);
     private placeOrder;
     private SetOpen;
