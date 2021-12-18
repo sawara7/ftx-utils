@@ -30,6 +30,14 @@ class WebsocketAPI {
                 this.socket.send(JSON.stringify({ 'op': 'ping' }));
             }, 5 * 1000);
         };
+        this.onClose = () => {
+            console.log('close');
+            this.socket = new ws_1.WebSocket('wss://ftx.com/ws/');
+            this.socket.addEventListener('error', this.onError);
+            this.socket.addEventListener('open', this.onOpen);
+            this.socket.addEventListener('message', this.onMessage);
+            this.socket.addEventListener('close', this.onClose);
+        };
         this.onError = () => {
             console.log('サーバーへの接続に失敗しました');
         };
@@ -67,6 +75,7 @@ class WebsocketAPI {
         this.socket.addEventListener('error', this.onError);
         this.socket.addEventListener('open', this.onOpen);
         this.socket.addEventListener('message', this.onMessage);
+        this.socket.addEventListener('close', this.onClose);
     }
     login(apiKey, secret, subaccount) {
         const t = Date.now();

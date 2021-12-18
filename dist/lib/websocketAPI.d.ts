@@ -51,6 +51,7 @@ export declare class WebsocketAPI {
     onOrder: ((orders: wsOrder) => void) | undefined;
     constructor();
     private onOpen;
+    private onClose;
     private onError;
     private onMessage;
     login(apiKey: string, secret: string, subaccount: string): void;

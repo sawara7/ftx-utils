@@ -71,6 +71,7 @@ export class WebsocketAPI {
         this.socket.addEventListener('error', this.onError)
         this.socket.addEventListener('open', this.onOpen)
         this.socket.addEventListener('message', this.onMessage)
+        this.socket.addEventListener('close', this.onClose)
     }
 
     private onOpen = () => {
@@ -78,6 +79,15 @@ export class WebsocketAPI {
         setInterval(() => {
             this.socket.send(JSON.stringify({'op': 'ping'}))
         }, 5 * 1000)
+    }
+
+    private onClose = () => {
+        console.log('close')
+        this.socket = new WebSocket('wss://ftx.com/ws/')
+        this.socket.addEventListener('error', this.onError)
+        this.socket.addEventListener('open', this.onOpen)
+        this.socket.addEventListener('message', this.onMessage)
+        this.socket.addEventListener('close', this.onClose)
     }
 
     private onError = () => {
