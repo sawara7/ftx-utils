@@ -38,8 +38,8 @@ export class SinglePosition {
     private marketName: string
     private funds: number 
     private minOrderInterval: number
-    private openOrderSettings?: OrderSettings
-    private closeOrderSettings?: OrderSettings
+    public openOrderSettings?: OrderSettings
+    public closeOrderSettings?: OrderSettings
 
     // Position State
     private initialSize: number = 0

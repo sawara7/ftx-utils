@@ -26,8 +26,8 @@ export declare class SinglePosition {
     private marketName;
     private funds;
     private minOrderInterval;
-    private openOrderSettings?;
-    private closeOrderSettings?;
+    openOrderSettings?: OrderSettings;
+    closeOrderSettings?: OrderSettings;
     private initialSize;
     currentSize: number;
     private openID;
