@@ -1,6 +1,5 @@
 import { WebSocket, MessageEvent } from 'ws'
 import * as crypto from 'crypto'
-
 interface wsResponse<T> {
     channel: string;
     market: string;
