@@ -16,7 +16,7 @@ export interface OrderSettings {
     side: OrderSide;
     type: OrderType;
     price: number;
-    size: number;
+    size?: number;
     postOnly?: boolean;
     cancelSec?: number;
 }

@@ -216,8 +216,8 @@ class SinglePosition {
                 this.openOrderSettings.price < ticker.bid :
                 this.openOrderSettings.price > ticker.ask)) {
             this.openID = 0;
-            this.currentSize = this.openOrderSettings.size;
-            this.initialSize = this.openOrderSettings.size;
+            this.currentSize = this.funds / this.openOrderSettings.price;
+            this.initialSize = this.funds / this.openOrderSettings.price;
             this.currentOpenPrice = this.openOrderSettings.price;
             if (this.onOpened) {
                 this.onOpened(this);
