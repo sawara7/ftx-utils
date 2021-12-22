@@ -1,4 +1,4 @@
-import { PrivateApiClass, wsFill, wsOrder } from "..";
+import { PrivateApiClass, wsFill, wsOrder, wsTicker } from "..";
 import { OrderSide, OrderType } from "./utils";
 export interface SinglePositionParameters {
     marketName: string;
@@ -16,7 +16,7 @@ export interface OrderSettings {
     side: OrderSide;
     type: OrderType;
     price: number;
-    size?: number;
+    size: number;
     postOnly?: boolean;
     cancelSec?: number;
 }
@@ -54,6 +54,7 @@ export declare class SinglePosition {
     openLimit(side: 'buy' | 'sell', price: number, postOnly?: boolean, cancelSec?: number): Promise<SinglePositionResponse>;
     closeMarket(): Promise<SinglePositionResponse>;
     closeLimit(price: number, postOnly?: boolean, cancelSec?: number): Promise<SinglePositionResponse>;
+    updateTicker(ticker: wsTicker): void;
     updateOrder(order: wsOrder): void;
     updateFill(fill: wsFill): void;
     get profit(): number;

@@ -5,7 +5,8 @@ import {
     PlaceOrderResponce,
     PrivateApiClass,
     wsFill,
-    wsOrder
+    wsOrder,
+    wsTicker
 } from ".."
 import { OrderSide, OrderType, sleep } from "./utils"
 export interface SinglePositionParameters {
@@ -25,7 +26,7 @@ export interface OrderSettings {
     side: OrderSide
     type: OrderType
     price: number
-    size?: number
+    size: number
     postOnly?: boolean
     cancelSec?: number
 }
@@ -250,6 +251,45 @@ export class SinglePosition {
             this.closeID = 0
         }
         return result
+    }
+
+    public updateTicker(ticker: wsTicker) {
+        if (this.openID > 1 &&
+            this.openTime < Date.now() - 60 * 1000 &&
+            this.openOrderSettings &&
+            this.openOrderSettings.type === 'limit' &&
+            (this.openOrderSettings.side === 'buy'?
+            this.openOrderSettings.price < ticker.bid:
+            this.openOrderSettings.price > ticker.ask)) {
+                this.openID = 0
+                this.currentSize = this.openOrderSettings.size
+                this.initialSize = this.openOrderSettings.size
+                this.currentOpenPrice = this.openOrderSettings.price
+                if (this.onOpened){
+                    this.onOpened(this)
+                }
+        }
+        if (this.closeID > 1 &&
+            this.closeTime < Date.now() - 60 * 1000 &&
+            this.closeOrderSettings &&
+            this.closeOrderSettings.type === 'limit' &&
+            (this.closeOrderSettings.side === 'buy'?
+            this.closeOrderSettings.price < ticker.bid:
+            this.closeOrderSettings.price > ticker.ask)) {
+                this.closeID = 0
+                this.isLosscut = false
+                this.currentClosePrice = this.closeOrderSettings.price
+                this.cumulativeProfit += this.initialSize * 
+                    (this.openSide === 'buy' ?
+                        (this.currentClosePrice - this.currentOpenPrice):
+                        (this.currentOpenPrice - this.currentClosePrice)
+                    )
+                this.initialSize = 0
+                this.currentSize = 0
+                if (this.onClosed){
+                    this.onClosed(this)
+                }
+        }
     }
 
     public updateOrder(order: wsOrder) {
