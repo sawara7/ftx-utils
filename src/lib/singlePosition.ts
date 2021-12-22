@@ -259,8 +259,8 @@ export class SinglePosition {
             this.openOrderSettings &&
             this.openOrderSettings.type === 'limit' &&
             (this.openOrderSettings.side === 'buy'?
-            this.openOrderSettings.price < ticker.bid:
-            this.openOrderSettings.price > ticker.ask)) {
+            this.openOrderSettings.price > ticker.bid:
+            this.openOrderSettings.price < ticker.ask)) {
                 this.openID = 0
                 this.currentSize = this.funds/this.openOrderSettings.price
                 this.initialSize = this.funds/this.openOrderSettings.price
@@ -274,8 +274,8 @@ export class SinglePosition {
             this.closeOrderSettings &&
             this.closeOrderSettings.type === 'limit' &&
             (this.closeOrderSettings.side === 'buy'?
-            this.closeOrderSettings.price < ticker.bid:
-            this.closeOrderSettings.price > ticker.ask)) {
+            this.closeOrderSettings.price > ticker.bid:
+            this.closeOrderSettings.price < ticker.ask)) {
                 this.closeID = 0
                 this.isLosscut = false
                 this.currentClosePrice = this.closeOrderSettings.price
