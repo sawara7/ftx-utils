@@ -38,6 +38,14 @@ class SinglePosition {
         this.minOrderInterval = params.minOrderInterval || 200;
         this.openOrderSettings = params.openOrderSettings;
         this.closeOrderSettings = params.closeOrderSettings;
+        this.sizeResolution = params.sizeResolution;
+        this.priceResolution = params.priceResolution;
+    }
+    roundSize(size) {
+        return Math.round(size * (1 / this.sizeResolution)) / (1 / this.sizeResolution);
+    }
+    roundPrice(price) {
+        return Math.round(price * (1 / this.priceResolution)) / (1 / this.priceResolution);
     }
     placeOrder(side, type, size, price, postOnly) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -119,7 +127,7 @@ class SinglePosition {
             };
             this.openID = 1; // lock
             try {
-                const res = yield this.placeOrder(side, 'market', this.funds / price);
+                const res = yield this.placeOrder(side, 'market', this.roundSize(this.funds / price));
                 this.SetOpen(res.result);
                 result.success = true;
             }
@@ -140,7 +148,7 @@ class SinglePosition {
             };
             this.openID = 1; // lock
             try {
-                const res = yield this.placeOrder(side, 'limit', this.funds / price, price, postOnly);
+                const res = yield this.placeOrder(side, 'limit', this.roundSize(this.funds / price), price, postOnly);
                 this.SetOpen(res.result);
                 result.success = true;
                 if (cancelSec > 0) {
@@ -216,8 +224,8 @@ class SinglePosition {
                 this.openOrderSettings.price > ticker.bid :
                 this.openOrderSettings.price < ticker.ask)) {
             this.openID = 0;
-            this.currentSize = this.funds / this.openOrderSettings.price;
-            this.initialSize = this.funds / this.openOrderSettings.price;
+            this.currentSize = this.roundSize(this.funds / this.openOrderSettings.price);
+            this.initialSize = this.roundSize(this.funds / this.openOrderSettings.price);
             this.currentOpenPrice = this.openOrderSettings.price;
             if (this.onOpened) {
                 this.onOpened(this);
@@ -247,17 +255,19 @@ class SinglePosition {
     updateOrder(order) {
         if (order.id === this.openID && order.status === 'closed') {
             this.openID = 0;
+            const size = this.roundSize(order.size);
+            const filled = this.roundSize(order.filledSize);
             if (order.filledSize > 0) {
-                this.currentSize += order.filledSize;
-                this.initialSize += order.filledSize;
+                this.currentSize += filled;
+                this.initialSize += filled;
                 this.currentOpenPrice = order.avgFillPrice ? order.avgFillPrice : order.price;
             }
-            if (order.filledSize !== order.size) {
+            if (filled !== size) {
                 if (this.onOpenOrderCanceled) {
                     this.onOpenOrderCanceled(this);
                 }
             }
-            if (order.filledSize === order.size) {
+            if (filled === size) {
                 if (this.onOpened) {
                     this.onOpened(this);
                 }
@@ -265,11 +275,13 @@ class SinglePosition {
         }
         if (order.id === this.closeID && order.status === 'closed') {
             this.closeID = 0;
-            if (order.filledSize > 0) {
-                this.currentSize -= order.filledSize;
+            const size = this.roundSize(order.size);
+            const filled = this.roundSize(order.filledSize);
+            if (filled > 0) {
+                this.currentSize -= filled;
                 this.currentClosePrice = order.avgFillPrice ? order.avgFillPrice : order.price;
             }
-            if (order.filledSize !== order.size) {
+            if (filled !== size) {
                 if (this.onCloseOrderCanceled) {
                     this.onCloseOrderCanceled(this);
                 }
@@ -280,7 +292,7 @@ class SinglePosition {
             else if (this.isLosscut && this.currentSize === 0) {
                 this.isLosscut = false;
             }
-            if (order.filledSize === order.size) {
+            if (filled === size) {
                 this.isLosscut = false;
                 this.cumulativeProfit += this.initialSize *
                     (this.openSide === 'buy' ?

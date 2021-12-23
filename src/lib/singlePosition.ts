@@ -13,6 +13,8 @@ export interface SinglePositionParameters {
     marketName: string
     funds: number
     api: PrivateApiClass
+    sizeResolution: number
+    priceResolution: number
     minOrderInterval?: number
     openOrderSettings?: OrderSettings
     closeOrderSettings?: OrderSettings
@@ -55,6 +57,8 @@ export class SinglePosition {
     public currentClosePrice: number = 0
     private cumulativeFee: number = 0
     private cumulativeProfit: number = 0
+    private sizeResolution: number
+    private priceResolution: number
 
     // Events
     public onOpened?: (pos: SinglePosition) => void
@@ -75,6 +79,16 @@ export class SinglePosition {
         this.minOrderInterval = params.minOrderInterval || 200
         this.openOrderSettings = params.openOrderSettings
         this.closeOrderSettings = params.closeOrderSettings
+        this.sizeResolution = params.sizeResolution
+        this.priceResolution = params.priceResolution
+    }
+
+    private roundSize(size: number): number {
+        return Math.round(size * (1/this.sizeResolution))/(1/this.sizeResolution)
+    }
+
+    private roundPrice(price: number): number {
+        return Math.round(price * (1/this.priceResolution))/(1/this.priceResolution)
     }
 
     private async placeOrder(side: OrderSide, type: OrderType, size: number,
@@ -164,7 +178,7 @@ export class SinglePosition {
         }
         this.openID = 1 // lock
         try {
-            const res = await this.placeOrder(side, 'market', this.funds/price)
+            const res = await this.placeOrder(side, 'market', this.roundSize(this.funds/price))
             this.SetOpen(res.result)
             result.success = true
         } catch(e) {
@@ -183,7 +197,7 @@ export class SinglePosition {
         }
         this.openID = 1 // lock
         try {
-            const res = await this.placeOrder(side, 'limit', this.funds/price, price, postOnly)
+            const res = await this.placeOrder(side, 'limit', this.roundSize(this.funds/price), price, postOnly)
             this.SetOpen(res.result)
             result.success = true
             if (cancelSec > 0) {
@@ -262,8 +276,8 @@ export class SinglePosition {
             this.openOrderSettings.price > ticker.bid:
             this.openOrderSettings.price < ticker.ask)) {
                 this.openID = 0
-                this.currentSize = this.funds/this.openOrderSettings.price
-                this.initialSize = this.funds/this.openOrderSettings.price
+                this.currentSize = this.roundSize(this.funds/this.openOrderSettings.price)
+                this.initialSize = this.roundSize(this.funds/this.openOrderSettings.price)
                 this.currentOpenPrice = this.openOrderSettings.price
                 if (this.onOpened){
                     this.onOpened(this)
@@ -295,17 +309,19 @@ export class SinglePosition {
     public updateOrder(order: wsOrder) {
         if (order.id === this.openID && order.status === 'closed') {
             this.openID = 0
+            const size = this.roundSize(order.size)
+            const filled = this.roundSize(order.filledSize)
             if (order.filledSize > 0) {
-                this.currentSize += order.filledSize
-                this.initialSize += order.filledSize
+                this.currentSize += filled
+                this.initialSize += filled
                 this.currentOpenPrice = order.avgFillPrice? order.avgFillPrice: order.price   
             }
-            if (order.filledSize !== order.size) {
+            if (filled !== size) {
                 if (this.onOpenOrderCanceled) {
                     this.onOpenOrderCanceled(this)
                 }
             }
-            if (order.filledSize === order.size) {
+            if (filled === size) {
                 if (this.onOpened){
                     this.onOpened(this)
                 }
@@ -313,11 +329,13 @@ export class SinglePosition {
         }
         if (order.id === this.closeID && order.status === 'closed') {
             this.closeID = 0
-            if (order.filledSize > 0) {
-                this.currentSize -= order.filledSize
+            const size = this.roundSize(order.size)
+            const filled = this.roundSize(order.filledSize)
+            if (filled > 0) {
+                this.currentSize -= filled
                 this.currentClosePrice = order.avgFillPrice? order.avgFillPrice: order.price
             }
-            if (order.filledSize !== order.size) {
+            if (filled !== size) {
                 if (this.onCloseOrderCanceled){
                     this.onCloseOrderCanceled(this)
                 }
@@ -329,7 +347,7 @@ export class SinglePosition {
                 this.isLosscut = false
             }
 
-            if (order.filledSize === order.size) {
+            if (filled === size) {
                 this.isLosscut = false
                 this.cumulativeProfit += this.initialSize * 
                     (this.openSide === 'buy' ?

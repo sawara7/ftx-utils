@@ -4,6 +4,8 @@ export interface SinglePositionParameters {
     marketName: string;
     funds: number;
     api: PrivateApiClass;
+    sizeResolution: number;
+    priceResolution: number;
     minOrderInterval?: number;
     openOrderSettings?: OrderSettings;
     closeOrderSettings?: OrderSettings;
@@ -40,11 +42,15 @@ export declare class SinglePosition {
     currentClosePrice: number;
     private cumulativeFee;
     private cumulativeProfit;
+    private sizeResolution;
+    private priceResolution;
     onOpened?: (pos: SinglePosition) => void;
     onClosed?: (pos: SinglePosition) => void;
     onOpenOrderCanceled?: (pos: SinglePosition) => void;
     onCloseOrderCanceled?: (pos: SinglePosition) => void;
     constructor(params: SinglePositionParameters);
+    private roundSize;
+    private roundPrice;
     private placeOrder;
     private SetOpen;
     private SetClose;
