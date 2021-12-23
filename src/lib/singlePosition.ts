@@ -96,9 +96,9 @@ export class SinglePosition {
         const p: PlaceOrderRequest = {
             market: this.marketName,
             side: side,
-            price: price ? price : null,
+            price: price ? this.roundPrice(price) : null,
             type: type,
-            size: size,
+            size: this.roundSize(size),
             reduceOnly: false,
             ioc: false
         }
@@ -178,7 +178,7 @@ export class SinglePosition {
         }
         this.openID = 1 // lock
         try {
-            const res = await this.placeOrder(side, 'market', this.roundSize(this.funds/price))
+            const res = await this.placeOrder(side, 'market', this.funds/price)
             this.SetOpen(res.result)
             result.success = true
         } catch(e) {
@@ -197,7 +197,7 @@ export class SinglePosition {
         }
         this.openID = 1 // lock
         try {
-            const res = await this.placeOrder(side, 'limit', this.roundSize(this.funds/price), price, postOnly)
+            const res = await this.placeOrder(side, 'limit', this.funds/price, price, postOnly)
             this.SetOpen(res.result)
             result.success = true
             if (cancelSec > 0) {
