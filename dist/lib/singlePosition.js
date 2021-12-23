@@ -52,9 +52,9 @@ class SinglePosition {
             const p = {
                 market: this.marketName,
                 side: side,
-                price: price ? price : null,
+                price: price ? this.roundPrice(price) : null,
                 type: type,
-                size: size,
+                size: this.roundSize(size),
                 reduceOnly: false,
                 ioc: false
             };
@@ -77,7 +77,13 @@ class SinglePosition {
                     yield utils_1.sleep(SinglePosition.lastOrderTime[this.marketName] - Date.now());
                 }
             }
-            return yield this.api.placeOrder(p);
+            const res = yield this.api.placeOrder(p);
+            if (res.success) {
+                return res;
+            }
+            else {
+                throw new Error('failed');
+            }
         });
     }
     SetOpen(res) {
@@ -127,7 +133,7 @@ class SinglePosition {
             };
             this.openID = 1; // lock
             try {
-                const res = yield this.placeOrder(side, 'market', this.roundSize(this.funds / price));
+                const res = yield this.placeOrder(side, 'market', this.funds / price);
                 this.SetOpen(res.result);
                 result.success = true;
             }
@@ -148,7 +154,7 @@ class SinglePosition {
             };
             this.openID = 1; // lock
             try {
-                const res = yield this.placeOrder(side, 'limit', this.roundSize(this.funds / price), price, postOnly);
+                const res = yield this.placeOrder(side, 'limit', this.funds / price, price, postOnly);
                 this.SetOpen(res.result);
                 result.success = true;
                 if (cancelSec > 0) {

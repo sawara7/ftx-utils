@@ -119,7 +119,12 @@ export class SinglePosition {
                 await sleep(SinglePosition.lastOrderTime[this.marketName] - Date.now())
             }
         }
-        return await this.api.placeOrder(p);
+        const res = await this.api.placeOrder(p);
+        if (res.success) {
+            return res
+        } else {
+            throw new Error('failed')
+        }
     }
 
     private SetOpen(res: PlaceOrderResponce) {
