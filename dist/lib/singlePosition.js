@@ -86,14 +86,20 @@ class SinglePosition {
             }
         });
     }
-    SetOpen(res) {
+    setOpen(res) {
         this.openSide = res.side === 'buy' ? 'buy' : 'sell';
         this.openID = res.id;
         this.openTime = Date.now();
     }
-    SetClose(res) {
+    setClose(res) {
         this.closeID = res.id;
         this.closeTime = Date.now();
+    }
+    resetOpen() {
+        this.openID = 0;
+    }
+    resetClose() {
+        this.closeID = 0;
     }
     open() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -134,7 +140,7 @@ class SinglePosition {
             this.openID = 1; // lock
             try {
                 const res = yield this.placeOrder(side, 'market', this.funds / price);
-                this.SetOpen(res.result);
+                this.setOpen(res.result);
                 result.success = true;
             }
             catch (e) {
@@ -155,7 +161,7 @@ class SinglePosition {
             this.openID = 1; // lock
             try {
                 const res = yield this.placeOrder(side, 'limit', this.funds / price, price, postOnly);
-                this.SetOpen(res.result);
+                this.setOpen(res.result);
                 result.success = true;
                 if (cancelSec > 0) {
                     setTimeout(() => {
@@ -183,7 +189,7 @@ class SinglePosition {
             this.closeID = 1; // lock
             try {
                 const res = yield this.placeOrder(this.openSide === 'buy' ? 'sell' : 'buy', 'market', this.currentSize);
-                this.SetClose(res.result);
+                this.setClose(res.result);
                 result.success = true;
             }
             catch (e) {
@@ -204,7 +210,7 @@ class SinglePosition {
             this.closeID = 1;
             try {
                 const res = yield this.placeOrder(this.openSide === 'buy' ? 'sell' : 'buy', 'limit', this.currentSize, price, postOnly);
-                this.SetClose(res.result);
+                this.setClose(res.result);
                 result.success = true;
                 if (cancelSec > 0) {
                     setTimeout(() => {
@@ -222,45 +228,11 @@ class SinglePosition {
         });
     }
     updateTicker(ticker) {
-        if (this.openID > 1 &&
-            this.openTime < Date.now() - 60 * 1000 &&
-            this.openOrderSettings &&
-            this.openOrderSettings.type === 'limit' &&
-            (this.openOrderSettings.side === 'buy' ?
-                this.openOrderSettings.price > ticker.bid :
-                this.openOrderSettings.price < ticker.ask)) {
-            this.openID = 0;
-            this.currentSize = this.roundSize(this.funds / this.openOrderSettings.price);
-            this.initialSize = this.roundSize(this.funds / this.openOrderSettings.price);
-            this.currentOpenPrice = this.openOrderSettings.price;
-            if (this.onOpened) {
-                this.onOpened(this);
-            }
-        }
-        if (this.closeID > 1 &&
-            this.closeTime < Date.now() - 60 * 1000 &&
-            this.closeOrderSettings &&
-            this.closeOrderSettings.type === 'limit' &&
-            (this.closeOrderSettings.side === 'buy' ?
-                this.closeOrderSettings.price > ticker.bid :
-                this.closeOrderSettings.price < ticker.ask)) {
-            this.closeID = 0;
-            this.isLosscut = false;
-            this.currentClosePrice = this.closeOrderSettings.price;
-            this.cumulativeProfit += this.initialSize *
-                (this.openSide === 'buy' ?
-                    (this.currentClosePrice - this.currentOpenPrice) :
-                    (this.currentOpenPrice - this.currentClosePrice));
-            this.initialSize = 0;
-            this.currentSize = 0;
-            if (this.onClosed) {
-                this.onClosed(this);
-            }
-        }
+        // ToDO: 含み損更新
     }
     updateOrder(order) {
         if (order.id === this.openID && order.status === 'closed') {
-            this.openID = 0;
+            this.resetOpen();
             const size = this.roundSize(order.size);
             const filled = this.roundSize(order.filledSize);
             if (order.filledSize > 0) {
@@ -280,7 +252,7 @@ class SinglePosition {
             }
         }
         if (order.id === this.closeID && order.status === 'closed') {
-            this.closeID = 0;
+            this.resetClose();
             const size = this.roundSize(order.size);
             const filled = this.roundSize(order.filledSize);
             if (filled > 0) {
@@ -317,9 +289,6 @@ class SinglePosition {
             this.cumulativeFee += fill.fee;
         }
     }
-    get profit() {
-        return this.cumulativeProfit - this.cumulativeFee;
-    }
     losscut() {
         this.isLosscut = true;
         this.cancelCloseOrder();
@@ -341,13 +310,16 @@ class SinglePosition {
             this.api.cancelOrder(this.closeID);
         }
     }
+    get profit() {
+        return this.cumulativeProfit - this.cumulativeFee;
+    }
     get enabledOpen() {
         return this.openID === 0 &&
             this.closeID === 0 &&
             this.currentSize === 0;
     }
     get enabledClose() {
-        return this.openID !== 0 &&
+        return this.openID === 0 &&
             this.closeID === 0 &&
             this.currentSize > 0;
     }

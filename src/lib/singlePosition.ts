@@ -127,15 +127,23 @@ export class SinglePosition {
         }
     }
 
-    private SetOpen(res: PlaceOrderResponce) {
+    private setOpen(res: PlaceOrderResponce) {
         this.openSide = res.side === 'buy'? 'buy': 'sell'
         this.openID = res.id
         this.openTime = Date.now()
     }
 
-    private SetClose(res: PlaceOrderResponce) {
+    private setClose(res: PlaceOrderResponce) {
         this.closeID = res.id
         this.closeTime = Date.now()
+    }
+
+    private resetOpen() {
+        this.openID = 0
+    }
+
+    private resetClose() {
+        this.closeID = 0
     }
 
     public async open(): Promise<SinglePositionResponse> {
@@ -184,7 +192,7 @@ export class SinglePosition {
         this.openID = 1 // lock
         try {
             const res = await this.placeOrder(side, 'market', this.funds/price)
-            this.SetOpen(res.result)
+            this.setOpen(res.result)
             result.success = true
         } catch(e) {
             result.message = e
@@ -203,7 +211,7 @@ export class SinglePosition {
         this.openID = 1 // lock
         try {
             const res = await this.placeOrder(side, 'limit', this.funds/price, price, postOnly)
-            this.SetOpen(res.result)
+            this.setOpen(res.result)
             result.success = true
             if (cancelSec > 0) {
                 setTimeout(()=>{
@@ -232,7 +240,7 @@ export class SinglePosition {
                 this.openSide === 'buy'? 'sell': 'buy',
                 'market',
                 this.currentSize)
-            this.SetClose(res.result)
+            this.setClose(res.result)
             result.success = true
         } catch(e) {
             result.message = e
@@ -256,7 +264,7 @@ export class SinglePosition {
                 this.currentSize,
                 price,
                 postOnly)
-            this.SetClose(res.result)
+            this.setClose(res.result)
             result.success = true
             if (cancelSec > 0) {
                 setTimeout(()=>{
@@ -273,47 +281,12 @@ export class SinglePosition {
     }
 
     public updateTicker(ticker: wsTicker) {
-        if (this.openID > 1 &&
-            this.openTime < Date.now() - 60 * 1000 &&
-            this.openOrderSettings &&
-            this.openOrderSettings.type === 'limit' &&
-            (this.openOrderSettings.side === 'buy'?
-            this.openOrderSettings.price > ticker.bid:
-            this.openOrderSettings.price < ticker.ask)) {
-                this.openID = 0
-                this.currentSize = this.roundSize(this.funds/this.openOrderSettings.price)
-                this.initialSize = this.roundSize(this.funds/this.openOrderSettings.price)
-                this.currentOpenPrice = this.openOrderSettings.price
-                if (this.onOpened){
-                    this.onOpened(this)
-                }
-        }
-        if (this.closeID > 1 &&
-            this.closeTime < Date.now() - 60 * 1000 &&
-            this.closeOrderSettings &&
-            this.closeOrderSettings.type === 'limit' &&
-            (this.closeOrderSettings.side === 'buy'?
-            this.closeOrderSettings.price > ticker.bid:
-            this.closeOrderSettings.price < ticker.ask)) {
-                this.closeID = 0
-                this.isLosscut = false
-                this.currentClosePrice = this.closeOrderSettings.price
-                this.cumulativeProfit += this.initialSize * 
-                    (this.openSide === 'buy' ?
-                        (this.currentClosePrice - this.currentOpenPrice):
-                        (this.currentOpenPrice - this.currentClosePrice)
-                    )
-                this.initialSize = 0
-                this.currentSize = 0
-                if (this.onClosed){
-                    this.onClosed(this)
-                }
-        }
+        // ToDO: 含み損更新
     }
 
     public updateOrder(order: wsOrder) {
         if (order.id === this.openID && order.status === 'closed') {
-            this.openID = 0
+            this.resetOpen()
             const size = this.roundSize(order.size)
             const filled = this.roundSize(order.filledSize)
             if (order.filledSize > 0) {
@@ -333,7 +306,7 @@ export class SinglePosition {
             }
         }
         if (order.id === this.closeID && order.status === 'closed') {
-            this.closeID = 0
+            this.resetClose()
             const size = this.roundSize(order.size)
             const filled = this.roundSize(order.filledSize)
             if (filled > 0) {
@@ -374,10 +347,6 @@ export class SinglePosition {
         }
     }
 
-    get profit(): number {
-        return this.cumulativeProfit - this.cumulativeFee
-    }
-
     public losscut() {
         this.isLosscut = true
         this.cancelCloseOrder()
@@ -403,6 +372,10 @@ export class SinglePosition {
         }
     }
 
+    get profit(): number {
+        return this.cumulativeProfit - this.cumulativeFee
+    }
+
     get enabledOpen(): Boolean {
         return  this.openID === 0 &&
                 this.closeID === 0 &&
@@ -410,7 +383,7 @@ export class SinglePosition {
     }
 
     get enabledClose(): Boolean {
-        return  this.openID !== 0 &&
+        return  this.openID === 0 &&
                 this.closeID === 0 &&
                 this.currentSize > 0
     }

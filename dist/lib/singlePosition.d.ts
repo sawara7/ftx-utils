@@ -52,8 +52,10 @@ export declare class SinglePosition {
     private roundSize;
     private roundPrice;
     private placeOrder;
-    private SetOpen;
-    private SetClose;
+    private setOpen;
+    private setClose;
+    private resetOpen;
+    private resetClose;
     open(): Promise<SinglePositionResponse>;
     close(): Promise<SinglePositionResponse>;
     openMarket(side: OrderSide, price: number): Promise<SinglePositionResponse>;
@@ -63,11 +65,11 @@ export declare class SinglePosition {
     updateTicker(ticker: wsTicker): void;
     updateOrder(order: wsOrder): void;
     updateFill(fill: wsFill): void;
-    get profit(): number;
     losscut(): void;
     cancelAll(): void;
     cancelOpenOrder(): void;
     cancelCloseOrder(): void;
+    get profit(): number;
     get enabledOpen(): Boolean;
     get enabledClose(): Boolean;
 }
