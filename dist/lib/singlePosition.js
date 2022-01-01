@@ -14,43 +14,46 @@ const utils_1 = require("./utils");
 class SinglePosition {
     constructor(params) {
         // Position State
-        this.initialSize = 0;
-        this.currentSize = 0;
-        this.openID = 0;
-        this.closeID = 0;
-        this.openTime = 0;
-        this.closeTime = 0;
-        this.isLosscut = false;
-        this.openSide = 'buy';
-        this.currentOpenPrice = 0;
-        this.currentClosePrice = 0;
-        this.cumulativeFee = 0;
-        this.cumulativeProfit = 0;
-        if (!SinglePosition.lastOrderTime) {
-            SinglePosition.lastOrderTime = {};
+        this._initialSize = 0;
+        this._currentSize = 0;
+        this._openID = 0;
+        this._closeID = 0;
+        this._openTime = 0;
+        this._closeTime = 0;
+        this._isLosscut = false;
+        this._openSide = 'buy';
+        this._currentOpenPrice = 0;
+        this._currentClosePrice = 0;
+        // Information
+        this._closeCount = 0;
+        this._losscutCount = 0;
+        this._cumulativeFee = 0;
+        this._cumulativeProfit = 0;
+        if (!SinglePosition._lastOrderTime) {
+            SinglePosition._lastOrderTime = {};
         }
-        this.marketName = params.marketName;
-        if (!SinglePosition.lastOrderTime[this.marketName]) {
-            SinglePosition.lastOrderTime[this.marketName] = Date.now();
+        this._marketName = params.marketName;
+        if (!SinglePosition._lastOrderTime[this._marketName]) {
+            SinglePosition._lastOrderTime[this._marketName] = Date.now();
         }
-        this.funds = params.funds;
-        this.api = params.api;
-        this.minOrderInterval = params.minOrderInterval || 200;
-        this.openOrderSettings = params.openOrderSettings;
-        this.closeOrderSettings = params.closeOrderSettings;
-        this.sizeResolution = params.sizeResolution;
-        this.priceResolution = params.priceResolution;
+        this._funds = params.funds;
+        this._api = params.api;
+        this._minOrderInterval = params.minOrderInterval || 200;
+        this._openOrderSettings = params.openOrderSettings;
+        this._closeOrderSettings = params.closeOrderSettings;
+        this._sizeResolution = params.sizeResolution;
+        this._priceResolution = params.priceResolution;
     }
     roundSize(size) {
-        return Math.round(size * (1 / this.sizeResolution)) / (1 / this.sizeResolution);
+        return Math.round(size * (1 / this._sizeResolution)) / (1 / this._sizeResolution);
     }
     roundPrice(price) {
-        return Math.round(price * (1 / this.priceResolution)) / (1 / this.priceResolution);
+        return Math.round(price * (1 / this._priceResolution)) / (1 / this._priceResolution);
     }
     placeOrder(side, type, size, price, postOnly) {
         return __awaiter(this, void 0, void 0, function* () {
             const p = {
-                market: this.marketName,
+                market: this._marketName,
                 side: side,
                 price: price ? this.roundPrice(price) : null,
                 type: type,
@@ -61,23 +64,23 @@ class SinglePosition {
             if (postOnly) {
                 p.postOnly = true;
             }
-            if (SinglePosition.lastOrderTime && SinglePosition.lastOrderTime[this.marketName]) {
-                const interval = Date.now() - SinglePosition.lastOrderTime[this.marketName];
+            if (SinglePosition._lastOrderTime && SinglePosition._lastOrderTime[this._marketName]) {
+                const interval = Date.now() - SinglePosition._lastOrderTime[this._marketName];
                 if (interval > 0) {
-                    if (interval < this.minOrderInterval) {
-                        SinglePosition.lastOrderTime[this.marketName] += this.minOrderInterval;
-                        yield utils_1.sleep(this.minOrderInterval - interval);
+                    if (interval < this._minOrderInterval) {
+                        SinglePosition._lastOrderTime[this._marketName] += this._minOrderInterval;
+                        yield utils_1.sleep(this._minOrderInterval - interval);
                     }
-                    else if (interval > this.minOrderInterval) {
-                        SinglePosition.lastOrderTime[this.marketName] = Date.now();
+                    else if (interval > this._minOrderInterval) {
+                        SinglePosition._lastOrderTime[this._marketName] = Date.now();
                     }
                 }
                 else if (interval < 0) {
-                    SinglePosition.lastOrderTime[this.marketName] += this.minOrderInterval;
-                    yield utils_1.sleep(SinglePosition.lastOrderTime[this.marketName] - Date.now());
+                    SinglePosition._lastOrderTime[this._marketName] += this._minOrderInterval;
+                    yield utils_1.sleep(SinglePosition._lastOrderTime[this._marketName] - Date.now());
                 }
             }
-            const res = yield this.api.placeOrder(p);
+            const res = yield this._api.placeOrder(p);
             if (res.success) {
                 return res;
             }
@@ -87,43 +90,43 @@ class SinglePosition {
         });
     }
     setOpen(res) {
-        this.openSide = res.side === 'buy' ? 'buy' : 'sell';
-        this.openID = res.id;
-        this.openTime = Date.now();
+        this._openSide = res.side === 'buy' ? 'buy' : 'sell';
+        this._openID = res.id;
+        this._openTime = Date.now();
     }
     setClose(res) {
-        this.closeID = res.id;
-        this.closeTime = Date.now();
+        this._closeID = res.id;
+        this._closeTime = Date.now();
     }
     resetOpen() {
-        this.openID = 0;
+        this._openID = 0;
     }
     resetClose() {
-        this.closeID = 0;
+        this._closeID = 0;
     }
     open() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this.openOrderSettings) {
+            if (!this._openOrderSettings) {
                 return { success: false, message: 'No open order settings.' };
             }
-            if (this.openOrderSettings.type === 'limit') {
-                return yield this.openLimit(this.openOrderSettings.side, this.openOrderSettings.price, this.openOrderSettings.postOnly, this.openOrderSettings.cancelSec || 0);
+            if (this._openOrderSettings.type === 'limit') {
+                return yield this.openLimit(this._openOrderSettings.side, this._openOrderSettings.price, this._openOrderSettings.postOnly, this._openOrderSettings.cancelSec || 0);
             }
-            else if (this.openOrderSettings.type === 'market') {
-                return yield this.openMarket(this.openOrderSettings.side, this.openOrderSettings.price);
+            else if (this._openOrderSettings.type === 'market') {
+                return yield this.openMarket(this._openOrderSettings.side, this._openOrderSettings.price);
             }
             return { success: false, message: 'Open Failed.' };
         });
     }
     close() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this.closeOrderSettings) {
+            if (!this._closeOrderSettings) {
                 return { success: false, message: 'No close order settings.' };
             }
-            if (this.closeOrderSettings.type === 'limit') {
-                return yield this.closeLimit(this.closeOrderSettings.price, this.closeOrderSettings.postOnly, this.closeOrderSettings.cancelSec || 0);
+            if (this._closeOrderSettings.type === 'limit') {
+                return yield this.closeLimit(this._closeOrderSettings.price, this._closeOrderSettings.postOnly, this._closeOrderSettings.cancelSec || 0);
             }
-            else if (this.closeOrderSettings.type === 'market') {
+            else if (this._closeOrderSettings.type === 'market') {
                 return yield this.closeMarket();
             }
             return { success: false, message: 'Close Failed.' };
@@ -131,98 +134,98 @@ class SinglePosition {
     }
     openMarket(side, price) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.openID > 0) {
+            if (this._openID > 0) {
                 return { success: false, message: 'Position is already opened.' };
             }
             const result = {
                 success: false
             };
-            this.openID = 1; // lock
+            this._openID = 1; // lock
             try {
-                const res = yield this.placeOrder(side, 'market', this.funds / price);
+                const res = yield this.placeOrder(side, 'market', this._funds / price);
                 this.setOpen(res.result);
                 result.success = true;
             }
             catch (e) {
                 result.message = e;
-                this.openID = 0;
+                this._openID = 0;
             }
             return result;
         });
     }
     openLimit(side, price, postOnly = true, cancelSec = 0) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.openID > 0) {
+            if (this._openID > 0) {
                 return { success: false, message: 'Position is already opened.' };
             }
             const result = {
                 success: false
             };
-            this.openID = 1; // lock
+            this._openID = 1; // lock
             try {
-                const res = yield this.placeOrder(side, 'limit', this.funds / price, price, postOnly);
+                const res = yield this.placeOrder(side, 'limit', this._funds / price, price, postOnly);
                 this.setOpen(res.result);
                 result.success = true;
                 if (cancelSec > 0) {
                     setTimeout(() => {
-                        if (this.openID !== 0) {
-                            this.api.cancelOrder(this.openID);
+                        if (this._openID !== 0) {
+                            this._api.cancelOrder(this._openID);
                         }
                     }, cancelSec * 1000);
                 }
             }
             catch (e) {
                 result.message = e;
-                this.openID = 0;
+                this._openID = 0;
             }
             return result;
         });
     }
     closeMarket() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.closeID > 0) {
+            if (this._closeID > 0) {
                 return { success: false, message: 'Position is already closed.' };
             }
             const result = {
                 success: false
             };
-            this.closeID = 1; // lock
+            this._closeID = 1; // lock
             try {
-                const res = yield this.placeOrder(this.openSide === 'buy' ? 'sell' : 'buy', 'market', this.currentSize);
+                const res = yield this.placeOrder(this._openSide === 'buy' ? 'sell' : 'buy', 'market', this._currentSize);
                 this.setClose(res.result);
                 result.success = true;
             }
             catch (e) {
                 result.message = e;
-                this.closeID = 0;
+                this._closeID = 0;
             }
             return result;
         });
     }
     closeLimit(price, postOnly = true, cancelSec = 0) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.closeID > 0) {
+            if (this._closeID > 0) {
                 return { success: false, message: 'Position is already closed.' };
             }
             const result = {
                 success: false
             };
-            this.closeID = 1;
+            this._closeID = 1;
             try {
-                const res = yield this.placeOrder(this.openSide === 'buy' ? 'sell' : 'buy', 'limit', this.currentSize, price, postOnly);
+                const res = yield this.placeOrder(this._openSide === 'buy' ? 'sell' : 'buy', 'limit', this._currentSize, price, postOnly);
                 this.setClose(res.result);
                 result.success = true;
                 if (cancelSec > 0) {
                     setTimeout(() => {
-                        if (this.closeID !== 0) {
-                            this.api.cancelOrder(this.closeID);
+                        if (this._closeID !== 0) {
+                            this._api.cancelOrder(this._closeID);
                         }
                     }, cancelSec * 1000);
                 }
             }
             catch (e) {
                 result.message = e;
-                this.closeID = 0;
+                this._closeID = 0;
             }
             return result;
         });
@@ -231,14 +234,14 @@ class SinglePosition {
         // ToDO: 含み損更新
     }
     updateOrder(order) {
-        if (order.id === this.openID && order.status === 'closed') {
+        if (order.id === this._openID && order.status === 'closed') {
             this.resetOpen();
             const size = this.roundSize(order.size);
             const filled = this.roundSize(order.filledSize);
             if (order.filledSize > 0) {
-                this.currentSize += filled;
-                this.initialSize += filled;
-                this.currentOpenPrice = order.avgFillPrice ? order.avgFillPrice : order.price;
+                this._currentSize += filled;
+                this._initialSize += filled;
+                this._currentOpenPrice = order.avgFillPrice ? order.avgFillPrice : order.price;
             }
             if (filled !== size) {
                 if (this.onOpenOrderCanceled) {
@@ -251,33 +254,34 @@ class SinglePosition {
                 }
             }
         }
-        if (order.id === this.closeID && order.status === 'closed') {
+        if (order.id === this._closeID && order.status === 'closed') {
             this.resetClose();
             const size = this.roundSize(order.size);
             const filled = this.roundSize(order.filledSize);
             if (filled > 0) {
-                this.currentSize -= filled;
-                this.currentClosePrice = order.avgFillPrice ? order.avgFillPrice : order.price;
+                this._currentSize -= filled;
+                this._currentClosePrice = order.avgFillPrice ? order.avgFillPrice : order.price;
             }
             if (filled !== size) {
                 if (this.onCloseOrderCanceled) {
                     this.onCloseOrderCanceled(this);
                 }
             }
-            if (this.isLosscut && this.currentSize > 0) {
+            if (this._isLosscut && this._currentSize > 0) {
                 this.closeMarket();
             }
-            else if (this.isLosscut && this.currentSize === 0) {
-                this.isLosscut = false;
-            }
             if (filled === size) {
-                this.isLosscut = false;
-                this.cumulativeProfit += this.initialSize *
-                    (this.openSide === 'buy' ?
-                        (this.currentClosePrice - this.currentOpenPrice) :
-                        (this.currentOpenPrice - this.currentClosePrice));
-                this.initialSize = 0;
-                this.currentSize = 0;
+                if (this._isLosscut) {
+                    this._losscutCount++;
+                    this._isLosscut = false;
+                }
+                this._cumulativeProfit += this._initialSize *
+                    (this._openSide === 'buy' ?
+                        (this._currentClosePrice - this._currentOpenPrice) :
+                        (this._currentOpenPrice - this._currentClosePrice));
+                this._initialSize = 0;
+                this._currentSize = 0;
+                this._closeCount++;
                 if (this.onClosed) {
                     this.onClosed(this);
                 }
@@ -285,43 +289,70 @@ class SinglePosition {
         }
     }
     updateFill(fill) {
-        if (fill.market === this.marketName) {
-            this.cumulativeFee += fill.fee;
+        if (fill.market === this._marketName) {
+            this._cumulativeFee += fill.fee;
         }
     }
     losscut() {
-        this.isLosscut = true;
+        this._isLosscut = true;
         this.cancelCloseOrder();
     }
     cancelAll() {
-        if (this.closeID > 0 || this.openID > 0) {
-            this.api.cancelAllOrder({
-                market: this.marketName
+        if (this._closeID > 0 || this._openID > 0) {
+            this._api.cancelAllOrder({
+                market: this._marketName
             });
         }
     }
     cancelOpenOrder() {
-        if (this.openID > 0) {
-            this.api.cancelOrder(this.openID);
+        if (this._openID > 0) {
+            this._api.cancelOrder(this._openID);
         }
     }
     cancelCloseOrder() {
-        if (this.closeID > 0) {
-            this.api.cancelOrder(this.closeID);
+        if (this._closeID > 0) {
+            this._api.cancelOrder(this._closeID);
         }
     }
     get profit() {
-        return this.cumulativeProfit - this.cumulativeFee;
+        return this._cumulativeProfit - this._cumulativeFee;
     }
     get enabledOpen() {
-        return this.openID === 0 &&
-            this.closeID === 0 &&
-            this.currentSize === 0;
+        return this._openID === 0 &&
+            this._closeID === 0 &&
+            this._currentSize === 0;
     }
     get enabledClose() {
-        return this.openID === 0 &&
-            this.closeID === 0 &&
-            this.currentSize > 0;
+        return this._openID === 0 &&
+            this._closeID === 0 &&
+            this._currentSize > 0;
+    }
+    get openOrderSettings() {
+        return this._openOrderSettings;
+    }
+    get closeOrderSettings() {
+        return this._closeOrderSettings;
+    }
+    get currentSize() {
+        return this._currentSize;
+    }
+    get isLosscut() {
+        return this._isLosscut;
+    }
+    get openSide() {
+        return this._openSide;
+    }
+    get currentOpenPrice() {
+        return this._currentOpenPrice;
+    }
+    get currentClosePrice() {
+        return this._currentClosePrice;
+    }
+    get closeCount() {
+        return this._closeCount;
+    }
+    get losscutCount() {
+        return this._losscutCount;
     }
 }
 exports.SinglePosition = SinglePosition;
