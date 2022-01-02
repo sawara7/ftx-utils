@@ -19,19 +19,27 @@ export interface Balance {
 }
 
 export interface Market {
-    name: string
-    baseCurrency: number
-    quoteCurrency: number
-    type: string
-    underlying: string
-    enabled: boolean
-    ask: number
-    bid: number
-    last: number
-    postOnly: boolean
-    priceIncrement: number
-    sizeIncrement: number
-    restricted: boolean
+    name: string, //BTC-0628	e.g. "BTC/USD" for spot, "BTC-PERP" for futures
+    baseCurrency: string, //BTC	spot markets only
+    quoteCurrency: string, //USD	spot markets only
+    quoteVolume24h: number,	//28914.76	
+    change1h: number,	//0.012	change in the past hour
+    change24h: number,	//0.0299	change in the past 24 hours
+    changeBod: number,	//0.0156	change since start of day (00:00 UTC)
+    highLeverageFeeExempt: boolean, //false	
+    minProvideSize: number,	//0.001 Minimum maker order size (if >10 orders per hour fall below this size)
+    type: string,	//future	"future" or "spot"
+    underlying: string,	//BTC	future markets only
+    enabled: boolean, //true	
+    ask: number,	//3949.25	best ask
+    bid: number,	//3949.00	best bid
+    last: number,	//3949.00	last traded price
+    postOnly: boolean, //false	if the market is in post-only mode (all orders get modified to be post-only, in addition to other settings they may have)
+    price: number, //10579.52	current price
+    priceIncrement: number, //0.25	
+    sizeIncrement: number, //0.0001	
+    restricted: boolean, //false	if the market has nonstandard restrictions on which jurisdictions can trade it
+    volumeUsd24h: number, //28914.76	USD volume in past 24 hours
 }
 
 export interface OrderBook {

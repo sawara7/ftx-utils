@@ -17,8 +17,14 @@ export interface Balance {
 }
 export interface Market {
     name: string;
-    baseCurrency: number;
-    quoteCurrency: number;
+    baseCurrency: string;
+    quoteCurrency: string;
+    quoteVolume24h: number;
+    change1h: number;
+    change24h: number;
+    changeBod: number;
+    highLeverageFeeExempt: boolean;
+    minProvideSize: number;
     type: string;
     underlying: string;
     enabled: boolean;
@@ -26,9 +32,11 @@ export interface Market {
     bid: number;
     last: number;
     postOnly: boolean;
+    price: number;
     priceIncrement: number;
     sizeIncrement: number;
     restricted: boolean;
+    volumeUsd24h: number;
 }
 export interface OrderBook {
     asks: number[];
