@@ -1,5 +1,5 @@
+import { OrderSide, OrderType } from "my-utils";
 import { PrivateApiClass, wsFill, wsOrder, wsTicker } from "..";
-import { OrderSide, OrderType } from "./utils";
 export interface SinglePositionParameters {
     marketName: string;
     funds: number;

@@ -1,3 +1,8 @@
+import {
+    OrderSide,
+    OrderType,
+    sleep
+} from "my-utils"
 
 import {
     Response,
@@ -8,7 +13,6 @@ import {
     wsOrder,
     wsTicker
 } from ".."
-import { OrderSide, OrderType, sleep } from "./utils"
 export interface SinglePositionParameters {
     marketName: string
     funds: number

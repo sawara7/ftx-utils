@@ -1,4 +1,5 @@
 import { Method } from 'axios';
+import { RESTTradeAPI } from 'my-utils';
 export declare const FTX_API_NAME = "ftx";
 export interface ApiConfig {
     endPoint?: string;
@@ -20,7 +21,7 @@ export declare class ApiError extends Error {
     data: any;
     constructor(code: number, message: string, data?: any);
 }
-export declare class BaseApiClass {
+export declare class BaseApiClass extends RESTTradeAPI {
     readonly endPoint: string;
     readonly keepAlive: boolean;
     readonly timeout: number;

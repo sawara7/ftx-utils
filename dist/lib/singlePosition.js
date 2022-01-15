@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SinglePosition = void 0;
-const utils_1 = require("./utils");
+const my_utils_1 = require("my-utils");
 class SinglePosition {
     constructor(params) {
         // Position State
@@ -69,7 +69,7 @@ class SinglePosition {
                 if (interval > 0) {
                     if (interval < this._minOrderInterval) {
                         SinglePosition._lastOrderTime[this._marketName] += this._minOrderInterval;
-                        yield utils_1.sleep(this._minOrderInterval - interval);
+                        yield (0, my_utils_1.sleep)(this._minOrderInterval - interval);
                     }
                     else if (interval > this._minOrderInterval) {
                         SinglePosition._lastOrderTime[this._marketName] = Date.now();
@@ -77,7 +77,7 @@ class SinglePosition {
                 }
                 else if (interval < 0) {
                     SinglePosition._lastOrderTime[this._marketName] += this._minOrderInterval;
-                    yield utils_1.sleep(SinglePosition._lastOrderTime[this._marketName] - Date.now());
+                    yield (0, my_utils_1.sleep)(SinglePosition._lastOrderTime[this._marketName] - Date.now());
                 }
             }
             const res = yield this._api.placeOrder(p);

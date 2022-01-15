@@ -1,5 +1,6 @@
 import axios, { AxiosError, Method } from 'axios'
-import querystring from 'querystring'
+import { RESTTradeAPI } from 'my-utils'
+
 export const FTX_API_NAME = 'ftx'
 export interface ApiConfig {
     endPoint?: string;
@@ -29,7 +30,7 @@ export class ApiError extends Error {
         this.data = data;
     }
 }
-export class BaseApiClass {
+export class BaseApiClass extends RESTTradeAPI {
     readonly endPoint: string;
     readonly keepAlive: boolean;
     readonly timeout: number;
@@ -37,6 +38,7 @@ export class BaseApiClass {
     readonly responseCallback?: Function;
 
     constructor(config: ApiConfig, options?: BaseApiClassOptions) {
+        super()
         this.endPoint = config.endPoint || "";
         this.keepAlive = config.keepAlive || false;
         this.timeout = config.timeout || 3000;

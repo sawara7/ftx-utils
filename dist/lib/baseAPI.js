@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaseApiClass = exports.ApiError = exports.FTX_API_NAME = void 0;
 const axios_1 = __importDefault(require("axios"));
+const my_utils_1 = require("my-utils");
 exports.FTX_API_NAME = 'ftx';
 class ApiError extends Error {
     constructor(code, message, data) {
@@ -26,8 +27,9 @@ class ApiError extends Error {
     }
 }
 exports.ApiError = ApiError;
-class BaseApiClass {
+class BaseApiClass extends my_utils_1.RESTTradeAPI {
     constructor(config, options) {
+        super();
         this.endPoint = config.endPoint || "";
         this.keepAlive = config.keepAlive || false;
         this.timeout = config.timeout || 3000;
