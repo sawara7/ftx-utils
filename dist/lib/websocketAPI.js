@@ -81,6 +81,14 @@ class WebsocketAPI {
         this.socket = new ws_1.WebSocket('wss://ftx.com/ws/');
         this.pingInterval = (params.pingIntervalSec || 5) * 1000;
         this.reconnect = params.reconnectOnClose || false;
+        this.onTrades = params.onTrades;
+        this.onTicker = params.onTicker;
+        this.onFill = params.onFill;
+        this.onOrder = params.onOrder;
+        this.onPong = params.onPong;
+        this.onWebSocketOpen = params.onWebSocketOpen;
+        this.onWebSocketClose = params.onWebSocketClose;
+        this.onWebSocketError = params.onWebSocketError;
         this.initializeWebSocket();
     }
     initializeWebSocket() {

@@ -61,21 +61,30 @@ export interface wsOrder {
 export interface wsParameters {
     pingIntervalSec?: number
     reconnectOnClose?: boolean
+    onTrades?: (trades: wsTrade[]) => void
+    onTicker?: (ticer: wsTicker) => void
+    onFill?: (fill: wsFill) => void
+    onOrder?:(orders: wsOrder) => void
+    onPong?: () => void
+    // WebSocket Events
+    onWebSocketOpen?: () => void
+    onWebSocketClose?: () => void
+    onWebSocketError?: () => void
 }
 export class WebsocketAPI {
     private socket: WebSocket
     private pingInterval: number
     private reconnect: boolean
     // FTX Events
-    public onTrades?: (trades: wsTrade[]) => void
-    public onTicker?: (ticer: wsTicker) => void
-    public onFill?: (fill: wsFill) => void
-    public onOrder?:(orders: wsOrder) => void
-    public onPong?: () => void
+    private onTrades?: (trades: wsTrade[]) => void
+    private onTicker?: (ticer: wsTicker) => void
+    private onFill?: (fill: wsFill) => void
+    private onOrder?:(orders: wsOrder) => void
+    private onPong?: () => void
     // WebSocket Events
-    public onWebSocketOpen?: () => void
-    public onWebSocketClose?: () => void
-    public onWebSocketError?: () => void
+    private onWebSocketOpen?: () => void
+    private onWebSocketClose?: () => void
+    private onWebSocketError?: () => void
     // internal
     private pingIntervalID?: NodeJS.Timeout
 
@@ -83,6 +92,14 @@ export class WebsocketAPI {
         this.socket = new WebSocket('wss://ftx.com/ws/')
         this.pingInterval = (params.pingIntervalSec || 5) * 1000
         this.reconnect = params.reconnectOnClose || false
+        this.onTrades = params.onTrades
+        this.onTicker = params.onTicker
+        this.onFill = params.onFill
+        this.onOrder = params.onOrder
+        this.onPong = params.onPong
+        this.onWebSocketOpen = params.onWebSocketOpen
+        this.onWebSocketClose = params.onWebSocketClose
+        this.onWebSocketError = params.onWebSocketError
         this.initializeWebSocket()
     }
 

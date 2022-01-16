@@ -46,11 +46,6 @@ export interface wsOrder {
 export interface wsParameters {
     pingIntervalSec?: number;
     reconnectOnClose?: boolean;
-}
-export declare class WebsocketAPI {
-    private socket;
-    private pingInterval;
-    private reconnect;
     onTrades?: (trades: wsTrade[]) => void;
     onTicker?: (ticer: wsTicker) => void;
     onFill?: (fill: wsFill) => void;
@@ -59,6 +54,19 @@ export declare class WebsocketAPI {
     onWebSocketOpen?: () => void;
     onWebSocketClose?: () => void;
     onWebSocketError?: () => void;
+}
+export declare class WebsocketAPI {
+    private socket;
+    private pingInterval;
+    private reconnect;
+    private onTrades?;
+    private onTicker?;
+    private onFill?;
+    private onOrder?;
+    private onPong?;
+    private onWebSocketOpen?;
+    private onWebSocketClose?;
+    private onWebSocketError?;
     private pingIntervalID?;
     constructor(params: wsParameters);
     private initializeWebSocket;
