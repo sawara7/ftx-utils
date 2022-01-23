@@ -61,12 +61,16 @@ export interface wsOrder {
 export interface wsParameters {
     pingIntervalSec?: number
     reconnectOnClose?: boolean
+    apiKey?: string
+    apiSecret?: string
+    subAccount?: string
     onTrades?: (trades: wsTrade[]) => void
     onTicker?: (ticer: wsTicker) => void
     onFill?: (fill: wsFill) => void
     onOrder?:(orders: wsOrder) => void
     onPong?: () => void
-    // WebSocket Events
+    onError?: (code: string, message: string) => void
+    onInfo?: (code: string, message: string) => void
     onWebSocketOpen?: () => void
     onWebSocketClose?: () => void
     onWebSocketError?: () => void
@@ -75,12 +79,17 @@ export class WebsocketAPI {
     private socket: WebSocket
     private pingInterval: number
     private reconnect: boolean
+    private apiKey?: string
+    private apiSecret?: string
+    private subaccount?: string
     // FTX Events
     private onTrades?: (trades: wsTrade[]) => void
     private onTicker?: (ticer: wsTicker) => void
     private onFill?: (fill: wsFill) => void
     private onOrder?:(orders: wsOrder) => void
     private onPong?: () => void
+    private onFTXError?: (code: string, message: string) => void
+    private onFTXInfo?:(code: string, message: string) => void
     // WebSocket Events
     private onWebSocketOpen?: () => void
     private onWebSocketClose?: () => void
@@ -92,11 +101,16 @@ export class WebsocketAPI {
         this.socket = new WebSocket('wss://ftx.com/ws/')
         this.pingInterval = (params.pingIntervalSec || 5) * 1000
         this.reconnect = params.reconnectOnClose || false
+        this.apiKey = params.apiKey
+        this.apiSecret = params.apiSecret
+        this.subaccount = params.subAccount
         this.onTrades = params.onTrades
         this.onTicker = params.onTicker
         this.onFill = params.onFill
         this.onOrder = params.onOrder
         this.onPong = params.onPong
+        this.onFTXError = params.onError
+        this.onFTXInfo = params.onInfo
         this.onWebSocketOpen = params.onWebSocketOpen
         this.onWebSocketClose = params.onWebSocketClose
         this.onWebSocketError = params.onWebSocketError
@@ -161,24 +175,35 @@ export class WebsocketAPI {
             if (this.onPong) {
                 this.onPong()
             }
-        }else{
+        }else if (t.type === 'info'){
+            if (this.onFTXInfo) {
+                this.onFTXInfo(t.code || '', t.msg || '')
+            }
+        }else if (t.type === 'error'){
+            if (this.onFTXError) {
+                this.onFTXError(t.code || '', t.msg || '')
+            }
+        }else {
             console.log(event.data)
         }
     }
 
-    public login(apiKey:string, secret: string, subaccount: string) {
+    public login() {
+        if (!(this.apiKey && this.apiSecret)) {
+            throw new Error('api key and api secret are undefined.')
+        }
         const t = Date.now()
         this.socket.send(JSON.stringify({
             'op': 'login',
             'args': {
-                'key': apiKey,
+                'key': this.apiKey,
                 'sign': crypto
-                    .createHmac('sha256', secret)
+                    .createHmac('sha256', this.apiSecret)
                     .update(Buffer.from(t+'websocket_login'))
                     .digest('hex')
                     .toString(),
                 'time': t,
-                'subaccount': subaccount
+                'subaccount': this.subaccount
             }
         }))
     }

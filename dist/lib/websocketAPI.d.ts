@@ -46,11 +46,16 @@ export interface wsOrder {
 export interface wsParameters {
     pingIntervalSec?: number;
     reconnectOnClose?: boolean;
+    apiKey?: string;
+    apiSecret?: string;
+    subAccount?: string;
     onTrades?: (trades: wsTrade[]) => void;
     onTicker?: (ticer: wsTicker) => void;
     onFill?: (fill: wsFill) => void;
     onOrder?: (orders: wsOrder) => void;
     onPong?: () => void;
+    onError?: (code: string, message: string) => void;
+    onInfo?: (code: string, message: string) => void;
     onWebSocketOpen?: () => void;
     onWebSocketClose?: () => void;
     onWebSocketError?: () => void;
@@ -59,11 +64,16 @@ export declare class WebsocketAPI {
     private socket;
     private pingInterval;
     private reconnect;
+    private apiKey?;
+    private apiSecret?;
+    private subaccount?;
     private onTrades?;
     private onTicker?;
     private onFill?;
     private onOrder?;
     private onPong?;
+    private onFTXError?;
+    private onFTXInfo?;
     private onWebSocketOpen?;
     private onWebSocketClose?;
     private onWebSocketError?;
@@ -74,7 +84,7 @@ export declare class WebsocketAPI {
     private onClose;
     private onError;
     private onMessage;
-    login(apiKey: string, secret: string, subaccount: string): void;
+    login(): void;
     subscribePublic(ch: "trades" | "ticker", market: string): void;
     subscribePrivate(ch: "fills" | "orders"): void;
 }

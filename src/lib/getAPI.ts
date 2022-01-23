@@ -1,5 +1,5 @@
-import { getRealTimeDatabase } from "my-utils";
-import { PrivateApiClass } from "..";
+import { getRealTimeDatabase, sleep } from "my-utils";
+import { PrivateApiClass, WebsocketAPI } from "..";
 
 export async function getFTXPrivateAPI(subAccount: string): Promise<PrivateApiClass> {
     const rdb = await getRealTimeDatabase()

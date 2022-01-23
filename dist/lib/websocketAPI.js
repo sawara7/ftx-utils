@@ -74,6 +74,16 @@ class WebsocketAPI {
                     this.onPong();
                 }
             }
+            else if (t.type === 'info') {
+                if (this.onFTXInfo) {
+                    this.onFTXInfo(t.code || '', t.msg || '');
+                }
+            }
+            else if (t.type === 'error') {
+                if (this.onFTXError) {
+                    this.onFTXError(t.code || '', t.msg || '');
+                }
+            }
             else {
                 console.log(event.data);
             }
@@ -81,11 +91,16 @@ class WebsocketAPI {
         this.socket = new ws_1.WebSocket('wss://ftx.com/ws/');
         this.pingInterval = (params.pingIntervalSec || 5) * 1000;
         this.reconnect = params.reconnectOnClose || false;
+        this.apiKey = params.apiKey;
+        this.apiSecret = params.apiSecret;
+        this.subaccount = params.subAccount;
         this.onTrades = params.onTrades;
         this.onTicker = params.onTicker;
         this.onFill = params.onFill;
         this.onOrder = params.onOrder;
         this.onPong = params.onPong;
+        this.onFTXError = params.onError;
+        this.onFTXInfo = params.onInfo;
         this.onWebSocketOpen = params.onWebSocketOpen;
         this.onWebSocketClose = params.onWebSocketClose;
         this.onWebSocketError = params.onWebSocketError;
@@ -100,19 +115,22 @@ class WebsocketAPI {
         this.socket.addEventListener('message', this.onMessage);
         this.socket.addEventListener('close', this.onClose);
     }
-    login(apiKey, secret, subaccount) {
+    login() {
+        if (!(this.apiKey && this.apiSecret)) {
+            throw new Error('api key and api secret are undefined.');
+        }
         const t = Date.now();
         this.socket.send(JSON.stringify({
             'op': 'login',
             'args': {
-                'key': apiKey,
+                'key': this.apiKey,
                 'sign': crypto
-                    .createHmac('sha256', secret)
+                    .createHmac('sha256', this.apiSecret)
                     .update(Buffer.from(t + 'websocket_login'))
                     .digest('hex')
                     .toString(),
                 'time': t,
-                'subaccount': subaccount
+                'subaccount': this.subaccount
             }
         }));
     }
