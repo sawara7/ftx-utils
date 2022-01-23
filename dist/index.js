@@ -17,3 +17,4 @@ __exportStar(require("./lib/responseType"), exports);
 __exportStar(require("./lib/websocketAPI"), exports);
 __exportStar(require("./lib/websocketClient"), exports);
 __exportStar(require("./lib/singlePosition"), exports);
+__exportStar(require("./lib/getAPI"), exports);
