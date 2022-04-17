@@ -25,6 +25,7 @@
     "querystring": "^0.2.1",
     "ws": "^8.3.0",
     "my-utils": "github:sawara7/my-utils",
+    "trade-utils": "github:sawara7/trade-utils",
     "slack-notification": "github:sawara7/slack-notification"
   }
 }

@@ -19,7 +19,7 @@ import {
     GetOrderHistoryResponse,
     OpenOrder,
     PlaceOrderResponce,
-    Response,
+    FTXResponse,
     Subaccount,
     WithdrawalResponse
 } from './responseType'
@@ -47,62 +47,62 @@ export class PrivateApiClass extends BaseApiClass {
         this.subAccount = config.subAccount;
     }
 
-    public getAllSubaccounts(): Promise<Response<Subaccount[]>> {
+    public getAllSubaccounts(): Promise<FTXResponse<Subaccount[]>> {
         const path = '/api/subaccounts'
         return this.get(path, {})
     }
 
-    public getBalances(): Promise<Response<Balance[]>> {
+    public getBalances(): Promise<FTXResponse<Balance[]>> {
         const path = '/api/wallet/balances'
         return this.get(path, {})
     }
 
-    public getAllBalances(): Promise<Response<{[nickname: string] : Balance[]}>> {
+    public getAllBalances(): Promise<FTXResponse<{[nickname: string] : Balance[]}>> {
         const path = '/api/wallet/all_balances'
         return this.get(path, {})
     }
 
-    public getFundingPayment(params: GetFundingPaymentRequest): Promise<Response<FundingRatePayment[]>> {
+    public getFundingPayment(params: GetFundingPaymentRequest): Promise<FTXResponse<FundingRatePayment[]>> {
         const path = '/api/funding_payments'
         return this.get(path, params)
     }
 
-    public getOpenOrders(): Promise<Response<OpenOrder[]>> {
+    public getOpenOrders(): Promise<FTXResponse<OpenOrder[]>> {
         const path = '/api/orders'
         return this.get(path, {})
     }
 
-    public placeOrder(params: PlaceOrderRequest): Promise<Response<PlaceOrderResponce>> {
+    public placeOrder(params: PlaceOrderRequest): Promise<FTXResponse<PlaceOrderResponce>> {
         const path = '/api/orders'
         return this.post(path, params)
     }
 
-    public getFills(params: GetFillsRequest): Promise<Response<GetFillsResponse[]>> {
+    public getFills(params: GetFillsRequest): Promise<FTXResponse<GetFillsResponse[]>> {
         const path = '/api/fills'
         return this.get(path, params)
     }
 
-    public getOrderHistory(params: GetOrderHistoryRequest): Promise<Response<GetOrderHistoryResponse[]>> {
+    public getOrderHistory(params: GetOrderHistoryRequest): Promise<FTXResponse<GetOrderHistoryResponse[]>> {
         const path = '/api/orders/history'
         return this.get(path, params)
     }
 
-    public requestWithdrawal(params: WithdrawalRequest): Promise<Response<WithdrawalResponse>> {
+    public requestWithdrawal(params: WithdrawalRequest): Promise<FTXResponse<WithdrawalResponse>> {
         const path = '/api/wallet/withdrawals'
         return this.post(path, params)
     }
 
-    public cancelAllOrder(params: CancelAllOrdersRequest): Promise<Response<string>> {
+    public cancelAllOrder(params: CancelAllOrdersRequest): Promise<FTXResponse<string>> {
         const path = '/api/orders'
         return this.delete(path, params)
     }
 
-    public cancelOrder(id: number): Promise<Response<string>> {
+    public cancelOrder(id: number): Promise<FTXResponse<string>> {
         const path = '/api/orders/' + id
         return this.delete(path, {})
     }
 
-    public cancelOrderByClientID(id: string): Promise<Response<string>> {
+    public cancelOrderByClientID(id: string): Promise<FTXResponse<string>> {
         const path = '/api/orders/by_client_id/' + id
         return this.delete(path, {})
     }

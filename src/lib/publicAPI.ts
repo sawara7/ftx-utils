@@ -11,7 +11,7 @@ import {
     GetTradesRequest
 } from './requestType';
 import {
-    Response,
+    FTXResponse,
     Market,
     OrderBook,
     Trade,
@@ -37,37 +37,37 @@ export class PublicApiClass extends BaseApiClass {
         return super.get(queryPath, query)
     }
 
-    public getMarkets(): Promise<Response<Market[]>> {
+    public getMarkets(): Promise<FTXResponse<Market[]>> {
         const path = '/api/markets'
         return this.get(path)
     }
 
-    public getSingleMarket(request: GetSingleMarketRequest): Promise<Response<Market>> {
+    public getSingleMarket(request: GetSingleMarketRequest): Promise<FTXResponse<Market>> {
         const path = '/api/markets/' + request.market_name
         return this.get(path)
     }
     
-    public getOrderbook(market: string, request: GetOrderbookRequest): Promise<Response<OrderBook>> {
+    public getOrderbook(market: string, request: GetOrderbookRequest): Promise<FTXResponse<OrderBook>> {
         const path = '/api/markets/' + market + '/orderbook'
         return this.get(path, request)
     }
 
-    public getTrades(market: string, request: GetTradesRequest): Promise<Response<Trade[]>> {
+    public getTrades(market: string, request: GetTradesRequest): Promise<FTXResponse<Trade[]>> {
         const path = '/api/markets/' + market + '/trades'
         return this.get(path, request)
     }
 
-    public getHistoricalPrices(market: string, request: GetHistoricalPricesRequest): Promise<Response<HistoricalPrice[]>> {
+    public getHistoricalPrices(market: string, request: GetHistoricalPricesRequest): Promise<FTXResponse<HistoricalPrice[]>> {
         const path = '/api/markets/' + market + '/candles'
         return this.get(path, request)
     }
 
-    public getFundingRates(request: GetFundingRateRequest): Promise<Response<FundingRate[]>> {
+    public getFundingRates(request: GetFundingRateRequest): Promise<FTXResponse<FundingRate[]>> {
         const path = '/api/funding_rates'
         return this.get(path, request)
     }
 
-    public getListAllFutures(): Promise<Response<Future[]>> {
+    public getListAllFutures(): Promise<FTXResponse<Future[]>> {
         const path = '/api/futures'
         return this.get(path, {})
     }

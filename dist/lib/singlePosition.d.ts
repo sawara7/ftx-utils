@@ -1,86 +1,42 @@
-import { OrderSide, OrderType } from "my-utils";
-import { PrivateApiClass, wsFill, wsOrder, wsTicker } from "..";
-export interface SinglePositionParameters {
-    marketName: string;
+import { BasePositionClass, MarketInfo, OrderSide, OrderType } from "trade-utils";
+import { PrivateApiClass, wsOrder, wsTicker } from "..";
+import { FTXOrderClass } from "./order";
+export interface FTXSinglePositionParameters {
+    marketInfo: MarketInfo;
+    openSide: OrderSide;
+    orderType: OrderType;
     funds: number;
     api: PrivateApiClass;
-    sizeResolution: number;
-    priceResolution: number;
+    openPrice: number;
+    closePrice: number;
     minOrderInterval?: number;
-    openOrderSettings?: OrderSettings;
-    closeOrderSettings?: OrderSettings;
 }
-export interface SinglePositionResponse {
-    success: boolean;
-    message?: any;
-}
-export interface OrderSettings {
-    side: OrderSide;
-    type: OrderType;
-    price: number;
-    size?: number;
-    postOnly?: boolean;
-    cancelSec?: number;
-}
-export declare class SinglePosition {
+export declare class FTXSinglePosition extends BasePositionClass {
     private static _lastOrderTime?;
     private _api;
-    private _marketName;
-    private _funds;
     private _minOrderInterval;
-    private _openOrderSettings?;
-    private _closeOrderSettings?;
+    private _marketInfo;
     private _initialSize;
     private _currentSize;
+    private _openPrice;
+    private _closePrice;
+    private _openOrder;
+    private _closeOrder;
     private _openID;
     private _closeID;
-    private _openTime;
-    private _closeTime;
-    private _isLosscut;
-    private _openSide;
-    private _currentOpenPrice;
-    private _currentClosePrice;
-    private _sizeResolution;
-    private _priceResolution;
-    private _closeCount;
-    private _losscutCount;
-    private _cumulativeFee;
-    private _cumulativeProfit;
-    onOpened?: (pos: SinglePosition) => void;
-    onClosed?: (pos: SinglePosition) => void;
-    onOpenOrderCanceled?: (pos: SinglePosition) => void;
-    onCloseOrderCanceled?: (pos: SinglePosition) => void;
-    constructor(params: SinglePositionParameters);
-    private roundSize;
-    private roundPrice;
+    constructor(params: FTXSinglePositionParameters);
+    private static initializeLastOrderTime;
+    private sleepWhileOrderInterval;
     private placeOrder;
-    private setOpen;
-    private setClose;
-    private resetOpen;
-    private resetClose;
-    open(): Promise<SinglePositionResponse>;
-    close(): Promise<SinglePositionResponse>;
-    openMarket(side: OrderSide, price: number): Promise<SinglePositionResponse>;
-    openLimit(side: 'buy' | 'sell', price: number, postOnly?: boolean, cancelSec?: number): Promise<SinglePositionResponse>;
-    closeMarket(): Promise<SinglePositionResponse>;
-    closeLimit(price: number, postOnly?: boolean, cancelSec?: number): Promise<SinglePositionResponse>;
+    doOpen(): Promise<void>;
+    doClose(): Promise<void>;
     updateTicker(ticker: wsTicker): void;
     updateOrder(order: wsOrder): void;
-    updateFill(fill: wsFill): void;
-    losscut(): void;
-    cancelAll(): void;
-    cancelOpenOrder(): void;
-    cancelCloseOrder(): void;
-    get profit(): number;
-    get enabledOpen(): Boolean;
-    get enabledClose(): Boolean;
-    get openOrderSettings(): OrderSettings | undefined;
-    get closeOrderSettings(): OrderSettings | undefined;
-    get currentSize(): number;
-    get isLosscut(): boolean;
-    get openSide(): OrderSide;
+    get activeID(): string;
+    get enabledOpen(): boolean;
+    get enabledClose(): boolean;
+    get openOrder(): FTXOrderClass;
+    get closeOrder(): FTXOrderClass;
     get currentOpenPrice(): number;
     get currentClosePrice(): number;
-    get closeCount(): number;
-    get losscutCount(): number;
 }
