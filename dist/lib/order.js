@@ -17,9 +17,9 @@ class FTXOrderClass extends trade_utils_1.BaseOrderClass {
             type: 'limit',
             size: this.size,
             reduceOnly: this._reduceOnly,
-            ioc: this._ioc,
+            // ioc: this._ioc,
             postOnly: this.postOnly,
-            clientId: this._clientID
+            // clientId: this._clientID
         };
     }
 }
