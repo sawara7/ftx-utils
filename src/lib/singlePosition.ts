@@ -145,7 +145,7 @@ export class FTXSinglePosition extends BasePositionClass {
             this._openID = ''
             if (filled > 0) {
                 this._currentSize = this.openOrder.roundSize(this._currentSize + filled)
-                this._initialSize += this.openOrder.roundSize(this._currentSize + filled)
+                this._initialSize = this.openOrder.roundSize(this._currentSize + filled)
                 this._openPrice = this.openOrder.roundPrice(order.avgFillPrice? order.avgFillPrice: order.price)   
             }
             if (filled !== size) {
@@ -200,18 +200,6 @@ export class FTXSinglePosition extends BasePositionClass {
             return this._closeID
         }
         return ''
-    }
-
-    get enabledOpen(): boolean {
-        return super.enabledOpen &&
-            this.activeID === '' &&
-            this._currentSize === 0
-    }
-
-    get enabledClose(): boolean {
-        return super.enabledOpen &&
-            this.activeID === '' &&
-            this._currentSize > 0
     }
 
     get openOrder(): FTXOrderClass {
