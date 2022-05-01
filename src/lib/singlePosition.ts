@@ -144,8 +144,8 @@ export class FTXSinglePosition extends BasePositionClass {
         if (order.id.toString() === this._openID && order.status === 'closed') {
             this._openID = ''
             if (filled > 0) {
-                this._currentSize = this.openOrder.roundSize(this._currentSize + filled)
-                this._initialSize = this.openOrder.roundSize(this._currentSize + filled)
+                this._currentSize = this.openOrder.roundSize(filled)
+                this._initialSize = this.openOrder.roundSize(filled)
                 this._openPrice = this.openOrder.roundPrice(order.avgFillPrice? order.avgFillPrice: order.price)   
             }
             if (filled !== size) {

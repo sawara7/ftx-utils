@@ -33,8 +33,6 @@ export declare class FTXSinglePosition extends BasePositionClass {
     updateTicker(ticker: wsTicker): void;
     updateOrder(order: wsOrder): void;
     get activeID(): string;
-    get enabledOpen(): boolean;
-    get enabledClose(): boolean;
     get openOrder(): FTXOrderClass;
     get closeOrder(): FTXOrderClass;
     get currentOpenPrice(): number;
