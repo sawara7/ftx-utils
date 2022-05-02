@@ -193,3 +193,30 @@ export interface WithdrawalResponse {
     time: string;
     txid: string | null;
 }
+
+export interface PositionResponse {
+    cost: number; //-31.7906	Amount that was paid to enter this position, equal to size * entry_price. Positive if long, negative if short.
+    cumulativeBuySize: number; //1.2	
+    cumulativeSellSize: number; //0.0	
+    entryPrice: number; //138.22	Average cost of this position after pnl was last realized: whenever unrealized pnl gets realized, this field gets set to mark price, unrealizedPnL is set to 0, and realizedPnl changes by the previous value for unrealizedPnl.
+    estimatedLiquidationPrice: number; //152.1	
+    future: string; //ETH-PERP	future name
+    initialMarginRequirement: number; //0.1	Minimum margin fraction for opening new positions
+    longOrderSize: number; //1744.55	Cumulative size of all open bids
+    maintenanceMarginRequirement: number; //0.04	Minimum margin fraction to avoid liquidations
+    netSize: number; //-0.23	Size of position. Positive if long, negative if short.
+    openSize: number; //1744.32	Maximum possible absolute position size if some subset of open orders are filled
+    realizedPnl: number; //3.39441714	
+    recentAverageOpenPrice: number; //135.31	
+    recentBreakEvenPrice: number; //135.31	
+    recentPnl: number; //3.1134	
+    shortOrderSize: number; //1732.09	Cumulative size of all open offers
+    side: string;	//sell	sell if short, buy if long
+    size: number; //0.23 Absolute value of netSize
+    unrealizedPnl: number; //0.0	
+    collateralUsed: number; //3.17906
+        /* Is equal to:
+        For PRESIDENT: initialMarginRequirement * openSize * (risk price)
+        For MOVE: initialMarginRequirement * openSize * (index price)
+        Otherwise: initialMarginRequirement * openSize * (mark price) */
+}

@@ -1,6 +1,7 @@
 import { BaseApiClass, BaseApiClassOptions, FTXApiConfig } from './baseAPI';
-import { CancelAllOrdersRequest, GetFillsRequest, GetFundingPaymentRequest, GetOrderHistoryRequest, PlaceOrderRequest, WithdrawalRequest } from './requestType';
+import { CancelAllOrdersRequest, GetFillsRequest, GetFundingPaymentRequest, GetOrderHistoryRequest, GetPositionsRequest, PlaceOrderRequest, WithdrawalRequest } from './requestType';
 import { Balance, FundingRatePayment, GetFillsResponse, GetOrderHistoryResponse, OpenOrder, PlaceOrderResponce, FTXResponse, Subaccount, WithdrawalResponse } from './responseType';
+import { PositionResponse } from '..';
 export declare class PrivateApiClass extends BaseApiClass {
     private static toSha256;
     private readonly apiKey;
@@ -21,6 +22,7 @@ export declare class PrivateApiClass extends BaseApiClass {
     cancelAllOrder(params: CancelAllOrdersRequest): Promise<FTXResponse<string>>;
     cancelOrder(id: number): Promise<FTXResponse<string>>;
     cancelOrderByClientID(id: string): Promise<FTXResponse<string>>;
+    getPositions(params: GetPositionsRequest): Promise<FTXResponse<PositionResponse[]>>;
     get<T>(path: string, query?: {}): Promise<any>;
     post<T>(path: string, body: {}): Promise<any>;
     delete<T>(path: string, query?: {}): Promise<any>;

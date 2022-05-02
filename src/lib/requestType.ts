@@ -79,3 +79,7 @@ export interface CancelAllOrdersRequest {
     conditionalOrdersOnly?: boolean;	//false	optional; restrict to cancelling conditional orders only
     limitOrdersOnly?: boolean;
 }
+
+export interface GetPositionsRequest {
+    showAvgPrice?: boolean;
+}

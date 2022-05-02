@@ -9,6 +9,7 @@ import {
     GetFillsRequest,
     GetFundingPaymentRequest,
     GetOrderHistoryRequest, 
+    GetPositionsRequest, 
     PlaceOrderRequest, 
     WithdrawalRequest
 } from './requestType'
@@ -24,6 +25,7 @@ import {
     WithdrawalResponse
 } from './responseType'
 import * as querystring from 'querystring'
+import { PositionResponse } from '..'
 
 const BASE_URL = 'https://ftx.com';
 export class PrivateApiClass extends BaseApiClass {
@@ -105,6 +107,11 @@ export class PrivateApiClass extends BaseApiClass {
     public cancelOrderByClientID(id: string): Promise<FTXResponse<string>> {
         const path = '/api/orders/by_client_id/' + id
         return this.delete(path, {})
+    }
+
+    public getPositions(params: GetPositionsRequest): Promise<FTXResponse<PositionResponse[]>> {
+        const path = '/api/positions'
+        return this.get(path, params)
     }
 
     get<T>(path: string, query?: {}) {
