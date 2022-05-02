@@ -175,6 +175,16 @@ class FTXSinglePosition extends trade_utils_1.BasePositionClass {
         }
         return '';
     }
+    get enabledOpen() {
+        return super.enabledOpen &&
+            this.activeID === '' &&
+            this._currentSize === 0;
+    }
+    get enabledClose() {
+        return super.enabledOpen &&
+            this.activeID === '' &&
+            this._currentSize > 0;
+    }
     get openOrder() {
         return this._openOrder;
     }

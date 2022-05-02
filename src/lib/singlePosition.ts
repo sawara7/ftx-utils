@@ -202,6 +202,18 @@ export class FTXSinglePosition extends BasePositionClass {
         return ''
     }
 
+    get enabledOpen(): boolean {
+        return super.enabledOpen &&
+            this.activeID === '' &&
+            this._currentSize === 0
+    }
+
+    get enabledClose(): boolean {
+        return super.enabledOpen &&
+            this.activeID === '' &&
+            this._currentSize > 0
+    }
+
     get openOrder(): FTXOrderClass {
         return this._openOrder
     }
