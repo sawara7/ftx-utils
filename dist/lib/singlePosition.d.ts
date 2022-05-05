@@ -39,4 +39,6 @@ export declare class FTXSinglePosition extends BasePositionClass {
     get closeOrder(): FTXOrderClass;
     get currentOpenPrice(): number;
     get currentClosePrice(): number;
+    set bestAsk(value: number);
+    set bestBid(value: number);
 }

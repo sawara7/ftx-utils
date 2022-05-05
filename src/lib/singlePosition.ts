@@ -184,6 +184,7 @@ export class FTXSinglePosition extends BasePositionClass {
                     (this.openOrder.side === 'buy' ? (this._closePrice - this._openPrice): (this._openPrice - this._closePrice))
                 this._initialSize = 0
                 this._currentSize = 0
+                this._unrealizedProfit = 0
                 this._closeCount++
                 if (this.onClosed){
                     this.onClosed(this)
@@ -228,5 +229,19 @@ export class FTXSinglePosition extends BasePositionClass {
 
     get currentClosePrice(): number {
         return this._closePrice
+    }
+
+    set bestAsk(value: number) {
+        super.bestAsk = value
+        if (this._currentSize > 0 && this._openOrder.side === 'sell') {
+            this._unrealizedProfit = (this._openPrice - value) * this._currentSize
+        }
+    }
+
+    set bestBid(value: number) {
+        super.bestBid = value
+        if (this._currentSize > 0 && this._openOrder.side === 'buy') {
+            this._unrealizedProfit = (value - this._openPrice) * this._currentSize
+        }
     }
 }
