@@ -77,6 +77,28 @@ class FTXSinglePosition extends trade_utils_1.BasePositionClass {
     placeOrder(order) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.sleepWhileOrderInterval();
+            if (this._backtestMode) {
+                return {
+                    success: 1,
+                    result: {
+                        id: Date.now(),
+                        createdAt: Date.now().toString(),
+                        filledSize: 0.0,
+                        future: this._marketInfo.name,
+                        market: this._marketInfo.name,
+                        price: order.price,
+                        remainingSize: 0,
+                        side: order.side,
+                        size: order.size,
+                        status: 'open',
+                        type: order.type,
+                        reduceOnly: false,
+                        ioc: false,
+                        postOnly: false,
+                        clientId: 'test'
+                    }
+                };
+            }
             return yield this._api.placeOrder(order.limitOrderRequest);
         });
     }
@@ -116,13 +138,13 @@ class FTXSinglePosition extends trade_utils_1.BasePositionClass {
         // ToDO: 含み損更新
     }
     updateOrder(order) {
-        const size = order.size;
-        const filled = order.filledSize;
+        const size = this.openOrder.roundSize(order.size);
+        const filled = this.openOrder.roundSize(order.filledSize);
         if (order.id.toString() === this._openID && order.status === 'closed') {
             this._openID = '';
             if (filled > 0) {
-                this._currentSize = this.openOrder.roundSize(filled);
-                this._initialSize = this.openOrder.roundSize(filled);
+                this._currentSize = filled;
+                this._initialSize = filled;
                 this._openPrice = this.openOrder.roundPrice(order.avgFillPrice ? order.avgFillPrice : order.price);
             }
             if (filled !== size) {
@@ -197,6 +219,9 @@ class FTXSinglePosition extends trade_utils_1.BasePositionClass {
     }
     get currentClosePrice() {
         return this._closePrice;
+    }
+    get currentSize() {
+        return this._currentSize;
     }
     set bestAsk(value) {
         super.bestAsk = value;

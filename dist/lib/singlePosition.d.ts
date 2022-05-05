@@ -1,7 +1,7 @@
-import { BasePositionClass, MarketInfo, OrderSide, OrderType } from "trade-utils";
+import { BasePositionClass, BasePositionParameters, MarketInfo, OrderSide, OrderType } from "trade-utils";
 import { PrivateApiClass, wsOrder, wsTicker } from "..";
 import { FTXOrderClass } from "./order";
-export interface FTXSinglePositionParameters {
+export interface FTXSinglePositionParameters extends BasePositionParameters {
     marketInfo: MarketInfo;
     openSide: OrderSide;
     orderType: OrderType;
@@ -39,6 +39,7 @@ export declare class FTXSinglePosition extends BasePositionClass {
     get closeOrder(): FTXOrderClass;
     get currentOpenPrice(): number;
     get currentClosePrice(): number;
+    get currentSize(): number;
     set bestAsk(value: number);
     set bestBid(value: number);
 }

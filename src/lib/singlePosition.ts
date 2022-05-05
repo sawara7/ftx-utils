@@ -4,6 +4,7 @@ import {
 
 import {
     BasePositionClass,
+    BasePositionParameters,
     MarketInfo,
     OrderSide,
     OrderType
@@ -21,7 +22,7 @@ import {
     FTXOrderClass
 } from "./order"
 
-export interface FTXSinglePositionParameters {
+export interface FTXSinglePositionParameters extends BasePositionParameters {
     marketInfo: MarketInfo
     openSide: OrderSide
     orderType: OrderType
@@ -251,6 +252,10 @@ export class FTXSinglePosition extends BasePositionClass {
 
     get currentClosePrice(): number {
         return this._closePrice
+    }
+
+    get currentSize(): number {
+        return this._currentSize
     }
 
     set bestAsk(value: number) {
