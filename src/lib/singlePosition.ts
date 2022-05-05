@@ -107,6 +107,28 @@ export class FTXSinglePosition extends BasePositionClass {
 
     private async placeOrder(order: FTXOrderClass): Promise<FTXResponse<PlaceOrderResponce>> {
         await this.sleepWhileOrderInterval()
+        if (this._backtestMode) {
+            return {
+                success: 1,
+                result: {
+                    id: Date.now(),
+                    createdAt: Date.now().toString(),
+                    filledSize:	0.0,	
+                    future:	this._marketInfo.name,
+                    market:	this._marketInfo.name,
+                    price: order.price,
+                    remainingSize: 0,	
+                    side: order.side,	
+                    size: order.size,	
+                    status:	'open',
+                    type: order.type,	
+                    reduceOnly: false,	
+                    ioc: false,	
+                    postOnly: false,	
+                    clientId: 'test'
+                }
+            }
+        }
         return await this._api.placeOrder(order.limitOrderRequest)
     }
 
@@ -139,13 +161,13 @@ export class FTXSinglePosition extends BasePositionClass {
     }
 
     public updateOrder(order: wsOrder) {
-        const size = order.size
-        const filled = order.filledSize
+        const size = this.openOrder.roundSize(order.size)
+        const filled = this.openOrder.roundSize(order.filledSize)
         if (order.id.toString() === this._openID && order.status === 'closed') {
             this._openID = ''
             if (filled > 0) {
-                this._currentSize = this.openOrder.roundSize(filled)
-                this._initialSize = this.openOrder.roundSize(filled)
+                this._currentSize = filled
+                this._initialSize = filled
                 this._openPrice = this.openOrder.roundPrice(order.avgFillPrice? order.avgFillPrice: order.price)   
             }
             if (filled !== size) {
