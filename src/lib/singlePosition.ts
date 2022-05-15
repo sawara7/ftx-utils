@@ -267,6 +267,10 @@ export class FTXSinglePosition extends BasePositionClass {
         return this._losscutOrder
     }
 
+    get isLosscut(): boolean {
+        return this._losscut
+    }
+
     get losscutPrice(): number | undefined {
         return this._losscutPrice
     }

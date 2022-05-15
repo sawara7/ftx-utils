@@ -227,6 +227,9 @@ class FTXSinglePosition extends trade_utils_1.BasePositionClass {
     get losscutOrder() {
         return this._losscutOrder;
     }
+    get isLosscut() {
+        return this._losscut;
+    }
     get losscutPrice() {
         return this._losscutPrice;
     }
