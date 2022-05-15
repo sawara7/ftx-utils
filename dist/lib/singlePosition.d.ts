@@ -9,6 +9,7 @@ export interface FTXSinglePositionParameters extends BasePositionParameters {
     api: PrivateApiClass;
     openPrice: number;
     closePrice: number;
+    losscutPrice?: number;
     minOrderInterval?: number;
 }
 export declare class FTXSinglePosition extends BasePositionClass {
@@ -22,6 +23,8 @@ export declare class FTXSinglePosition extends BasePositionClass {
     private _closePrice;
     private _openOrder;
     private _closeOrder;
+    private _losscutOrder?;
+    private _losscutPrice?;
     private _openID;
     private _closeID;
     constructor(params: FTXSinglePositionParameters);
@@ -30,6 +33,7 @@ export declare class FTXSinglePosition extends BasePositionClass {
     private placeOrder;
     doOpen(): Promise<void>;
     doClose(): Promise<void>;
+    doLosscut(): Promise<void>;
     updateTicker(ticker: wsTicker): void;
     updateOrder(order: wsOrder): void;
     get activeID(): string;
@@ -37,6 +41,8 @@ export declare class FTXSinglePosition extends BasePositionClass {
     get enabledClose(): boolean;
     get openOrder(): FTXOrderClass;
     get closeOrder(): FTXOrderClass;
+    get losscutOrder(): FTXOrderClass | undefined;
+    get losscutPrice(): number | undefined;
     get currentOpenPrice(): number;
     get currentClosePrice(): number;
     get currentSize(): number;

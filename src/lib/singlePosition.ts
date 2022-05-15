@@ -30,6 +30,7 @@ export interface FTXSinglePositionParameters extends BasePositionParameters {
     api: PrivateApiClass
     openPrice: number
     closePrice: number
+    losscutPrice?: number
     minOrderInterval?: number
 }
 
@@ -49,6 +50,8 @@ export class FTXSinglePosition extends BasePositionClass {
     private _closePrice: number = 0
     private _openOrder: FTXOrderClass
     private _closeOrder: FTXOrderClass
+    private _losscutOrder?: FTXOrderClass
+    private _losscutPrice?: number
 
     private _openID: string = ''
     private _closeID: string = ''
@@ -74,6 +77,7 @@ export class FTXSinglePosition extends BasePositionClass {
             price: params.closePrice
         })
         this._initialSize = this._openOrder.size
+        this._losscutPrice = params.losscutPrice
         FTXSinglePosition.initializeLastOrderTime(this._marketInfo.name)
     }
 
@@ -123,10 +127,10 @@ export class FTXSinglePosition extends BasePositionClass {
                     size: order.size,	
                     status:	'open',
                     type: order.type,	
-                    reduceOnly: false,	
-                    ioc: false,	
-                    postOnly: false,	
-                    clientId: 'test'
+                    reduceOnly: order.limitOrderRequest.reduceOnly || false,
+                    ioc: order.limitOrderRequest.ioc || false,	
+                    postOnly: order.limitOrderRequest.postOnly || false,	
+                    clientId: order.limitOrderRequest.clientId || 'test'
                 }
             }
         }
@@ -134,7 +138,6 @@ export class FTXSinglePosition extends BasePositionClass {
     }
 
     public async doOpen(): Promise<void> {
-        await super.doOpen()
         if (parseInt(this._openID) > 0) {
             throw new Error('Position is already opened.')
         }
@@ -146,7 +149,6 @@ export class FTXSinglePosition extends BasePositionClass {
     }
     
     public async doClose(): Promise<void> {
-        await super.doClose()
         if (parseInt(this._closeID) > 0) {
             throw new Error('Position is already opened.')
         }
@@ -155,6 +157,12 @@ export class FTXSinglePosition extends BasePositionClass {
             throw new Error('Place Order Error')
         }
         this._closeID = res.result.id.toString()
+    }
+
+    public async doLosscut(): Promise<void> {
+        if (this._losscut && this._closeID) {
+            this._api.cancelOrder(parseInt(this._closeID))
+        }
     }
 
     public updateTicker(ticker: wsTicker) {
@@ -189,20 +197,29 @@ export class FTXSinglePosition extends BasePositionClass {
                 this._closePrice = this.closeOrder.roundPrice(order.avgFillPrice? order.avgFillPrice: order.price)
             }
             if (filled !== size) {
+                if (this._losscut) {
+                    this._losscutOrder = new FTXOrderClass({
+                        market: this.closeOrder.market,
+                        type: this.closeOrder.type,
+                        side: this.closeOrder.side,
+                        size: this._currentSize,
+                        price: this._losscutPrice
+                    })
+                    this.placeOrder(this._losscutOrder)
+                }
                 if (this.onCloseOrderCanceled){
                     this.onCloseOrderCanceled(this)
                 }
             }
 
-            // if (this._isLosscut && this._currentSize > 0) {
-            //     this.closeMarket()
-            // }
-
             if (filled === size) {
-                // if (this._isLosscut) {
-                //     this._losscutCount++
-                //     this._isLosscut = false
-                // }
+                if (this._losscut) {
+                    this._losscutCount++
+                    this._losscut = false
+                    if (this.onLosscut){
+                        this.onLosscut(this)
+                    }
+                }
                 this._cumulativeProfit += this._initialSize * 
                     (this.openOrder.side === 'buy' ? (this._closePrice - this._openPrice): (this._openPrice - this._closePrice))
                 this._initialSize = 0
@@ -244,6 +261,14 @@ export class FTXSinglePosition extends BasePositionClass {
 
     get closeOrder(): FTXOrderClass {
         return this._closeOrder
+    }
+
+    get losscutOrder(): FTXOrderClass | undefined{
+        return this._losscutOrder
+    }
+
+    get losscutPrice(): number | undefined {
+        return this._losscutPrice
     }
 
     get currentOpenPrice(): number {

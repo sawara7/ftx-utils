@@ -41,6 +41,7 @@ class FTXSinglePosition extends trade_utils_1.BasePositionClass {
             price: params.closePrice
         });
         this._initialSize = this._openOrder.size;
+        this._losscutPrice = params.losscutPrice;
         FTXSinglePosition.initializeLastOrderTime(this._marketInfo.name);
     }
     static initializeLastOrderTime(market) {
@@ -92,10 +93,10 @@ class FTXSinglePosition extends trade_utils_1.BasePositionClass {
                         size: order.size,
                         status: 'open',
                         type: order.type,
-                        reduceOnly: false,
-                        ioc: false,
-                        postOnly: false,
-                        clientId: 'test'
+                        reduceOnly: order.limitOrderRequest.reduceOnly || false,
+                        ioc: order.limitOrderRequest.ioc || false,
+                        postOnly: order.limitOrderRequest.postOnly || false,
+                        clientId: order.limitOrderRequest.clientId || 'test'
                     }
                 };
             }
@@ -103,11 +104,7 @@ class FTXSinglePosition extends trade_utils_1.BasePositionClass {
         });
     }
     doOpen() {
-        const _super = Object.create(null, {
-            doOpen: { get: () => super.doOpen }
-        });
         return __awaiter(this, void 0, void 0, function* () {
-            yield _super.doOpen.call(this);
             if (parseInt(this._openID) > 0) {
                 throw new Error('Position is already opened.');
             }
@@ -119,11 +116,7 @@ class FTXSinglePosition extends trade_utils_1.BasePositionClass {
         });
     }
     doClose() {
-        const _super = Object.create(null, {
-            doClose: { get: () => super.doClose }
-        });
         return __awaiter(this, void 0, void 0, function* () {
-            yield _super.doClose.call(this);
             if (parseInt(this._closeID) > 0) {
                 throw new Error('Position is already opened.');
             }
@@ -132,6 +125,13 @@ class FTXSinglePosition extends trade_utils_1.BasePositionClass {
                 throw new Error('Place Order Error');
             }
             this._closeID = res.result.id.toString();
+        });
+    }
+    doLosscut() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this._losscut && this._closeID) {
+                this._api.cancelOrder(parseInt(this._closeID));
+            }
         });
     }
     updateTicker(ticker) {
@@ -165,18 +165,28 @@ class FTXSinglePosition extends trade_utils_1.BasePositionClass {
                 this._closePrice = this.closeOrder.roundPrice(order.avgFillPrice ? order.avgFillPrice : order.price);
             }
             if (filled !== size) {
+                if (this._losscut) {
+                    this._losscutOrder = new order_1.FTXOrderClass({
+                        market: this.closeOrder.market,
+                        type: this.closeOrder.type,
+                        side: this.closeOrder.side,
+                        size: this._currentSize,
+                        price: this._losscutPrice
+                    });
+                    this.placeOrder(this._losscutOrder);
+                }
                 if (this.onCloseOrderCanceled) {
                     this.onCloseOrderCanceled(this);
                 }
             }
-            // if (this._isLosscut && this._currentSize > 0) {
-            //     this.closeMarket()
-            // }
             if (filled === size) {
-                // if (this._isLosscut) {
-                //     this._losscutCount++
-                //     this._isLosscut = false
-                // }
+                if (this._losscut) {
+                    this._losscutCount++;
+                    this._losscut = false;
+                    if (this.onLosscut) {
+                        this.onLosscut(this);
+                    }
+                }
                 this._cumulativeProfit += this._initialSize *
                     (this.openOrder.side === 'buy' ? (this._closePrice - this._openPrice) : (this._openPrice - this._closePrice));
                 this._initialSize = 0;
@@ -213,6 +223,12 @@ class FTXSinglePosition extends trade_utils_1.BasePositionClass {
     }
     get closeOrder() {
         return this._closeOrder;
+    }
+    get losscutOrder() {
+        return this._losscutOrder;
+    }
+    get losscutPrice() {
+        return this._losscutPrice;
     }
     get currentOpenPrice() {
         return this._openPrice;
