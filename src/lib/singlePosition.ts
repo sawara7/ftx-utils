@@ -165,6 +165,21 @@ export class FTXSinglePosition extends BasePositionClass {
         }
     }
 
+    private async placeLosscutOrder(): Promise<void> {
+        this._losscutOrder = new FTXOrderClass({
+            market: this.closeOrder.market,
+            type: this.closeOrder.type,
+            side: this.closeOrder.side,
+            size: this._currentSize,
+            price: this.closeOrder.side === 'buy'? this.bestBid: this.bestAsk
+        })
+        const res = await this.placeOrder(this._losscutOrder)
+        if (res.success === 0) {
+            throw new Error('Place Order Error')
+        }
+        this._closeID = res.result.id.toString()
+    }
+
     public updateTicker(ticker: wsTicker) {
         // ToDO: 含み損更新
     }
@@ -198,14 +213,7 @@ export class FTXSinglePosition extends BasePositionClass {
             }
             if (filled !== size) {
                 if (this._losscut) {
-                    this._losscutOrder = new FTXOrderClass({
-                        market: this.closeOrder.market,
-                        type: this.closeOrder.type,
-                        side: this.closeOrder.side,
-                        size: this._currentSize,
-                        price: this._losscutPrice
-                    })
-                    this.placeOrder(this._losscutOrder)
+                    this.placeLosscutOrder()
                 }
                 if (this.onCloseOrderCanceled){
                     this.onCloseOrderCanceled(this)
