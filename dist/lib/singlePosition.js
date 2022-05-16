@@ -134,6 +134,22 @@ class FTXSinglePosition extends trade_utils_1.BasePositionClass {
             }
         });
     }
+    placeLosscutOrder() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this._losscutOrder = new order_1.FTXOrderClass({
+                market: this.closeOrder.market,
+                type: this.closeOrder.type,
+                side: this.closeOrder.side,
+                size: this._currentSize,
+                price: this.closeOrder.side === 'buy' ? this.bestBid : this.bestAsk
+            });
+            const res = yield this.placeOrder(this._losscutOrder);
+            if (res.success === 0) {
+                throw new Error('Place Order Error');
+            }
+            this._closeID = res.result.id.toString();
+        });
+    }
     updateTicker(ticker) {
         // ToDO: 含み損更新
     }
@@ -166,14 +182,7 @@ class FTXSinglePosition extends trade_utils_1.BasePositionClass {
             }
             if (filled !== size) {
                 if (this._losscut) {
-                    this._losscutOrder = new order_1.FTXOrderClass({
-                        market: this.closeOrder.market,
-                        type: this.closeOrder.type,
-                        side: this.closeOrder.side,
-                        size: this._currentSize,
-                        price: this._losscutPrice
-                    });
-                    this.placeOrder(this._losscutOrder);
+                    this.placeLosscutOrder();
                 }
                 if (this.onCloseOrderCanceled) {
                     this.onCloseOrderCanceled(this);

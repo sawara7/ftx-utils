@@ -34,6 +34,7 @@ export declare class FTXSinglePosition extends BasePositionClass {
     doOpen(): Promise<void>;
     doClose(): Promise<void>;
     doLosscut(): Promise<void>;
+    private placeLosscutOrder;
     updateTicker(ticker: wsTicker): void;
     updateOrder(order: wsOrder): void;
     get activeID(): string;
