@@ -282,6 +282,14 @@ export class FTXSinglePosition extends BasePositionClass {
         return this._losscut
     }
 
+    get bestBid(): number {
+        return super.bestBid
+    }
+
+    get bestAsk(): number {
+        return super.bestAsk
+    }
+
     get losscutPrice(): number | undefined {
         return this._losscutPrice
     }

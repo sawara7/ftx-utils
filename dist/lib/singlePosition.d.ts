@@ -44,6 +44,8 @@ export declare class FTXSinglePosition extends BasePositionClass {
     get closeOrder(): FTXOrderClass;
     get losscutOrder(): FTXOrderClass | undefined;
     get isLosscut(): boolean;
+    get bestBid(): number;
+    get bestAsk(): number;
     get losscutPrice(): number | undefined;
     get currentOpenPrice(): number;
     get currentClosePrice(): number;
