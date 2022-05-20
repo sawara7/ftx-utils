@@ -12,11 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BaseApiClass = exports.ApiError = exports.FTX_API_NAME = void 0;
+exports.BaseApiClass = exports.FTXApiError = exports.FTX_API_NAME = void 0;
 const axios_1 = __importDefault(require("axios"));
 const my_utils_1 = require("my-utils");
 exports.FTX_API_NAME = 'ftx';
-class ApiError extends Error {
+class FTXApiError extends Error {
     constructor(code, message, data) {
         super('API_ERROR');
         this.code = 0;
@@ -26,17 +26,15 @@ class ApiError extends Error {
         this.data = data;
     }
 }
-exports.ApiError = ApiError;
+exports.FTXApiError = FTXApiError;
 class BaseApiClass extends my_utils_1.RESTTradeAPI {
-    constructor(config, options) {
+    constructor(config) {
         super();
         this.endPoint = config.endPoint || "";
         this.keepAlive = config.keepAlive || false;
         this.timeout = config.timeout || 3000;
-        if (options) {
-            this.optionsCallback = options.optionsCallback;
-            this.responseCallback = options.responseCallback;
-        }
+        this.optionsCallback = config.optionsCallback;
+        this.responseCallback = config.responseCallback;
     }
     get(path, params, headers) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -94,7 +92,7 @@ class BaseApiClass extends my_utils_1.RESTTradeAPI {
                     code = err.response.status;
                     data = err.response.data;
                 }
-                throw new ApiError(code, message, data);
+                throw new FTXApiError(code, message, data);
             }
         });
     }

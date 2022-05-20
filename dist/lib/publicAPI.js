@@ -23,14 +23,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PublicApiClass = void 0;
+exports.FTXPublicApiClass = void 0;
 const baseAPI_1 = require("./baseAPI");
 const querystring = __importStar(require("querystring"));
 const BASE_URL = 'https://ftx.com';
-class PublicApiClass extends baseAPI_1.BaseApiClass {
-    constructor(config, options) {
+class FTXPublicApiClass extends baseAPI_1.BaseApiClass {
+    constructor(config) {
         config.endPoint = config.endPoint || BASE_URL;
-        super(config, options);
+        super(config);
     }
     get(path, query) {
         let queryPath = path;
@@ -68,4 +68,4 @@ class PublicApiClass extends baseAPI_1.BaseApiClass {
         return this.get(path, {});
     }
 }
-exports.PublicApiClass = PublicApiClass;
+exports.FTXPublicApiClass = FTXPublicApiClass;

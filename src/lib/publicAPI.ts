@@ -1,6 +1,5 @@
 import {
     BaseApiClass,
-    BaseApiClassOptions,
     ApiConfig
 } from './baseAPI';
 import {
@@ -23,10 +22,10 @@ import * as querystring from 'querystring'
 
 const BASE_URL = 'https://ftx.com';
 
-export class PublicApiClass extends BaseApiClass {
-    constructor(config: ApiConfig, options?: BaseApiClassOptions) {
+export class FTXPublicApiClass extends BaseApiClass {
+    constructor(config: ApiConfig) {
         config.endPoint = config.endPoint || BASE_URL
-        super(config, options)
+        super(config)
     }
 
     get<T>(path: string, query?: {}) {

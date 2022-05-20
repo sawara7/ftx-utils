@@ -1,8 +1,8 @@
-import { BaseApiClass, BaseApiClassOptions, ApiConfig } from './baseAPI';
+import { BaseApiClass, ApiConfig } from './baseAPI';
 import { GetFundingRateRequest, GetHistoricalPricesRequest, GetOrderbookRequest, GetSingleMarketRequest, GetTradesRequest } from './requestType';
 import { FTXResponse, Market, OrderBook, Trade, HistoricalPrice, FundingRate, Future } from './responseType';
-export declare class PublicApiClass extends BaseApiClass {
-    constructor(config: ApiConfig, options?: BaseApiClassOptions);
+export declare class FTXPublicApiClass extends BaseApiClass {
+    constructor(config: ApiConfig);
     get<T>(path: string, query?: {}): Promise<any>;
     getMarkets(): Promise<FTXResponse<Market[]>>;
     getSingleMarket(request: GetSingleMarketRequest): Promise<FTXResponse<Market>>;

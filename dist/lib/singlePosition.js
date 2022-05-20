@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FTXSinglePosition = void 0;
-const my_utils_1 = require("my-utils");
 const trade_utils_1 = require("trade-utils");
 const order_1 = require("./order");
 class FTXSinglePosition extends trade_utils_1.BasePositionClass {
@@ -24,7 +23,6 @@ class FTXSinglePosition extends trade_utils_1.BasePositionClass {
         this._closeID = '';
         this._api = params.api;
         this._marketInfo = params.marketInfo;
-        this._minOrderInterval = params.minOrderInterval || 200;
         const size = params.funds / params.openPrice;
         this._openOrder = new order_1.FTXOrderClass({
             market: params.marketInfo,
@@ -42,42 +40,9 @@ class FTXSinglePosition extends trade_utils_1.BasePositionClass {
         });
         this._initialSize = this._openOrder.size;
         this._losscutPrice = params.losscutPrice;
-        FTXSinglePosition.initializeLastOrderTime(this._marketInfo.name);
-    }
-    static initializeLastOrderTime(market) {
-        if (!FTXSinglePosition._lastOrderTime) {
-            FTXSinglePosition._lastOrderTime = {};
-        }
-        if (!FTXSinglePosition._lastOrderTime[market]) {
-            FTXSinglePosition._lastOrderTime[market] = Date.now();
-        }
-    }
-    sleepWhileOrderInterval() {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!FTXSinglePosition._lastOrderTime) {
-                throw new Error('no last order');
-            }
-            if (FTXSinglePosition._lastOrderTime[this._marketInfo.name]) {
-                const interval = Date.now() - FTXSinglePosition._lastOrderTime[this._marketInfo.name];
-                if (interval > 0) {
-                    if (interval < this._minOrderInterval) {
-                        FTXSinglePosition._lastOrderTime[this._marketInfo.name] += this._minOrderInterval;
-                        yield (0, my_utils_1.sleep)(this._minOrderInterval - interval);
-                    }
-                    else if (interval > this._minOrderInterval) {
-                        FTXSinglePosition._lastOrderTime[this._marketInfo.name] = Date.now();
-                    }
-                }
-                else if (interval < 0) {
-                    FTXSinglePosition._lastOrderTime[this._marketInfo.name] += this._minOrderInterval;
-                    yield (0, my_utils_1.sleep)(FTXSinglePosition._lastOrderTime[this._marketInfo.name] - Date.now());
-                }
-            }
-        });
     }
     placeOrder(order) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.sleepWhileOrderInterval();
             if (this._backtestMode) {
                 return {
                     success: 1,
@@ -242,12 +207,6 @@ class FTXSinglePosition extends trade_utils_1.BasePositionClass {
     get isLosscut() {
         return this._losscut;
     }
-    get bestBid() {
-        return super.bestBid;
-    }
-    get bestAsk() {
-        return super.bestAsk;
-    }
     get losscutPrice() {
         return this._losscutPrice;
     }
@@ -259,6 +218,12 @@ class FTXSinglePosition extends trade_utils_1.BasePositionClass {
     }
     get currentSize() {
         return this._currentSize;
+    }
+    get bestAsk() {
+        return super.bestAsk;
+    }
+    get bestBid() {
+        return super.bestBid;
     }
     set bestAsk(value) {
         super.bestAsk = value;

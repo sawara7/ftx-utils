@@ -1,21 +1,19 @@
 import { BasePositionClass, BasePositionParameters, MarketInfo, OrderSide, OrderType } from "trade-utils";
-import { PrivateApiClass, wsOrder, wsTicker } from "..";
+import { FTXPrivateApiClass, wsOrder, wsTicker } from "..";
 import { FTXOrderClass } from "./order";
 export interface FTXSinglePositionParameters extends BasePositionParameters {
     marketInfo: MarketInfo;
     openSide: OrderSide;
     orderType: OrderType;
     funds: number;
-    api: PrivateApiClass;
+    api: FTXPrivateApiClass;
     openPrice: number;
     closePrice: number;
     losscutPrice?: number;
     minOrderInterval?: number;
 }
 export declare class FTXSinglePosition extends BasePositionClass {
-    private static _lastOrderTime?;
     private _api;
-    private _minOrderInterval;
     private _marketInfo;
     private _initialSize;
     private _currentSize;
@@ -28,8 +26,6 @@ export declare class FTXSinglePosition extends BasePositionClass {
     private _openID;
     private _closeID;
     constructor(params: FTXSinglePositionParameters);
-    private static initializeLastOrderTime;
-    private sleepWhileOrderInterval;
     private placeOrder;
     doOpen(): Promise<void>;
     doClose(): Promise<void>;
@@ -44,12 +40,12 @@ export declare class FTXSinglePosition extends BasePositionClass {
     get closeOrder(): FTXOrderClass;
     get losscutOrder(): FTXOrderClass | undefined;
     get isLosscut(): boolean;
-    get bestBid(): number;
-    get bestAsk(): number;
     get losscutPrice(): number | undefined;
     get currentOpenPrice(): number;
     get currentClosePrice(): number;
     get currentSize(): number;
+    get bestAsk(): number;
+    get bestBid(): number;
     set bestAsk(value: number);
     set bestBid(value: number);
 }

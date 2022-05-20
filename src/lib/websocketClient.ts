@@ -5,16 +5,9 @@ import {
     wsTicker,
     wsTrade
 } from ".."
-
-import {
-    getRealTimeDatabase,
-    sleep,
-    timeBeforeMin
-} from "my-utils"
-
-import {
-    SlackNotifier
-} from "slack-notification"
+import { sleep, timeBeforeMin } from "my-utils"
+import { getRealTimeDatabase } from "firebase-utils-server"
+import { SlackNotifier } from "slack-notification"
 
 export interface WebsocketAPIClientParams {
     notifier?: SlackNotifier,

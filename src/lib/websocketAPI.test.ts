@@ -1,4 +1,5 @@
-import { getRealTimeDatabase, sleep } from "my-utils"
+import { sleep } from "my-utils"
+import { getRealTimeDatabase } from "firebase-utils-server"
 import { WebsocketAPI } from ".."
 
 (async ()=> {

@@ -1,13 +1,21 @@
-import { BaseApiClass, BaseApiClassOptions, FTXApiConfig } from './baseAPI';
+import { ApiConfig, BaseApiClass } from './baseAPI';
 import { CancelAllOrdersRequest, GetFillsRequest, GetFundingPaymentRequest, GetOrderHistoryRequest, GetPositionsRequest, PlaceOrderRequest, WithdrawalRequest } from './requestType';
 import { Balance, FundingRatePayment, GetFillsResponse, GetOrderHistoryResponse, OpenOrder, PlaceOrderResponce, FTXResponse, Subaccount, WithdrawalResponse } from './responseType';
 import { PositionResponse } from '..';
-export declare class PrivateApiClass extends BaseApiClass {
+export interface FTXPrivateApiConfig extends ApiConfig {
+    apiKey: string;
+    apiSecret: string;
+    subAccount?: string;
+    minOrderInterval?: number;
+}
+export declare class FTXPrivateApiClass extends BaseApiClass {
     private static toSha256;
-    private readonly apiKey;
-    private readonly apiSecret;
-    private readonly subAccount?;
-    constructor(config: FTXApiConfig, options?: BaseApiClassOptions);
+    private readonly _apiKey;
+    private readonly _apiSecret;
+    private readonly _subAccount?;
+    private static _lastOrderTime?;
+    private _minOrderInterval;
+    constructor(config: FTXPrivateApiConfig);
     getAllSubaccounts(): Promise<FTXResponse<Subaccount[]>>;
     getBalances(): Promise<FTXResponse<Balance[]>>;
     getAllBalances(): Promise<FTXResponse<{
@@ -27,4 +35,5 @@ export declare class PrivateApiClass extends BaseApiClass {
     post<T>(path: string, body: {}): Promise<any>;
     delete<T>(path: string, query?: {}): Promise<any>;
     private makeHeader;
+    private sleepWhileOrderInterval;
 }

@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.WebsocketAPIClient = void 0;
 const __1 = require("..");
 const my_utils_1 = require("my-utils");
+const firebase_utils_server_1 = require("firebase-utils-server");
 class WebsocketAPIClient {
     constructor(params) {
         this.isError = false;
@@ -91,7 +92,7 @@ class WebsocketAPIClient {
     }
     Start() {
         return __awaiter(this, void 0, void 0, function* () {
-            const rdb = yield (0, my_utils_1.getRealTimeDatabase)();
+            const rdb = yield (0, firebase_utils_server_1.getRealTimeDatabase)();
             this.apiKey = (yield rdb.get(yield rdb.getReference('settings/ftx/apiKey')));
             this.apiSecret = (yield rdb.get(yield rdb.getReference('settings/ftx/apiSecret')));
             this.wsAPI = new __1.WebsocketAPI({

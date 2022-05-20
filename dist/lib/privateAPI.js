@@ -22,19 +22,33 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PrivateApiClass = void 0;
+exports.FTXPrivateApiClass = void 0;
 const crypto = __importStar(require("crypto"));
 const baseAPI_1 = require("./baseAPI");
 const querystring = __importStar(require("querystring"));
+const my_utils_1 = require("my-utils");
 const BASE_URL = 'https://ftx.com';
-class PrivateApiClass extends baseAPI_1.BaseApiClass {
-    constructor(config, options) {
+class FTXPrivateApiClass extends baseAPI_1.BaseApiClass {
+    constructor(config) {
         config.endPoint = config.endPoint || BASE_URL;
-        super(config, options);
-        this.apiKey = config.apiKey;
-        this.apiSecret = config.apiSecret;
-        this.subAccount = config.subAccount;
+        super(config);
+        this._apiKey = config.apiKey;
+        this._apiSecret = config.apiSecret;
+        this._subAccount = config.subAccount;
+        this._minOrderInterval = config.minOrderInterval || 200;
+        if (!FTXPrivateApiClass._lastOrderTime) {
+            FTXPrivateApiClass._lastOrderTime = {};
+        }
     }
     static toSha256(key, value) {
         return crypto
@@ -64,8 +78,11 @@ class PrivateApiClass extends baseAPI_1.BaseApiClass {
         return this.get(path, {});
     }
     placeOrder(params) {
-        const path = '/api/orders';
-        return this.post(path, params);
+        return __awaiter(this, void 0, void 0, function* () {
+            const path = '/api/orders';
+            yield this.sleepWhileOrderInterval(params.market);
+            return yield this.post(path, params);
+        });
     }
     getFills(params) {
         const path = '/api/fills';
@@ -115,16 +132,39 @@ class PrivateApiClass extends baseAPI_1.BaseApiClass {
     makeHeader(method, path, body = '') {
         const ts = Date.now();
         const s = ts + method + path + (method === 'POST' ? body : '');
-        const sign = PrivateApiClass.toSha256(this.apiSecret, s);
+        const sign = FTXPrivateApiClass.toSha256(this._apiSecret, s);
         const header = {
-            'FTX-KEY': this.apiKey,
+            'FTX-KEY': this._apiKey,
             'FTX-TS': ts.toString(),
             'FTX-SIGN': sign
         };
-        if (this.subAccount) {
-            Object.assign(header, { 'FTX-SUBACCOUNT': this.subAccount });
+        if (this._subAccount) {
+            Object.assign(header, { 'FTX-SUBACCOUNT': this._subAccount });
         }
         return header;
     }
+    sleepWhileOrderInterval(market) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!FTXPrivateApiClass._lastOrderTime) {
+                throw new Error('no last order');
+            }
+            if (FTXPrivateApiClass._lastOrderTime[market]) {
+                const interval = Date.now() - FTXPrivateApiClass._lastOrderTime[market];
+                if (interval > 0) {
+                    if (interval < this._minOrderInterval) {
+                        FTXPrivateApiClass._lastOrderTime[market] += this._minOrderInterval;
+                        yield (0, my_utils_1.sleep)(this._minOrderInterval - interval);
+                    }
+                    else if (interval > this._minOrderInterval) {
+                        FTXPrivateApiClass._lastOrderTime[market] = Date.now();
+                    }
+                }
+                else if (interval < 0) {
+                    FTXPrivateApiClass._lastOrderTime[market] += this._minOrderInterval;
+                    yield (0, my_utils_1.sleep)(FTXPrivateApiClass._lastOrderTime[market] - Date.now());
+                }
+            }
+        });
+    }
 }
-exports.PrivateApiClass = PrivateApiClass;
+exports.FTXPrivateApiClass = FTXPrivateApiClass;

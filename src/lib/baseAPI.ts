@@ -6,20 +6,11 @@ export interface ApiConfig {
     endPoint?: string;
     keepAlive?: boolean;
     timeout?: number;
-}
-
-export interface FTXApiConfig extends ApiConfig {
-    apiKey: string;
-    apiSecret: string;
-    subAccount?: string;
-}
-
-export interface BaseApiClassOptions {
     optionsCallback?: Function;
     responseCallback?: Function;
 }
 
-export class ApiError extends Error {
+export class FTXApiError extends Error {
     code: number = 0;
     message: string = '';
     data: any;
@@ -37,15 +28,13 @@ export class BaseApiClass extends RESTTradeAPI {
     readonly optionsCallback?: Function;
     readonly responseCallback?: Function;
 
-    constructor(config: ApiConfig, options?: BaseApiClassOptions) {
+    constructor(config: ApiConfig) {
         super()
-        this.endPoint = config.endPoint || "";
-        this.keepAlive = config.keepAlive || false;
-        this.timeout = config.timeout || 3000;
-    if (options) {
-        this.optionsCallback = options.optionsCallback;
-        this.responseCallback = options.responseCallback;
-        }
+        this.endPoint = config.endPoint || ""
+        this.keepAlive = config.keepAlive || false
+        this.timeout = config.timeout || 3000
+        this.optionsCallback = config.optionsCallback
+        this.responseCallback = config.responseCallback
     }
 
     async get(path: string, params?: {}, headers?: {}) {
@@ -102,7 +91,7 @@ export class BaseApiClass extends RESTTradeAPI {
                 code = err.response.status;
                 data = err.response.data;
             }
-            throw new ApiError(code, message, data);
+            throw new FTXApiError(code, message, data);
         }
     }
 }

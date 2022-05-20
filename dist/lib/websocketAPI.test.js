@@ -10,9 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const my_utils_1 = require("my-utils");
+const firebase_utils_server_1 = require("firebase-utils-server");
 const __1 = require("..");
 (() => __awaiter(void 0, void 0, void 0, function* () {
-    const rdb = yield (0, my_utils_1.getRealTimeDatabase)();
+    const rdb = yield (0, firebase_utils_server_1.getRealTimeDatabase)();
     const apiKey = yield rdb.get(yield rdb.getReference('settings/ftx/apiKey'));
     const secret = yield rdb.get(yield rdb.getReference('settings/ftx/apiSecret'));
     let flg = false;

@@ -1,8 +1,4 @@
 import {
-    sleep
-} from "my-utils"
-
-import {
     BasePositionClass,
     BasePositionParameters,
     MarketInfo,
@@ -13,7 +9,7 @@ import {
 import {
     FTXResponse,
     PlaceOrderResponce,
-    PrivateApiClass,
+    FTXPrivateApiClass,
     wsOrder,
     wsTicker
 } from ".."
@@ -27,7 +23,7 @@ export interface FTXSinglePositionParameters extends BasePositionParameters {
     openSide: OrderSide
     orderType: OrderType
     funds: number
-    api: PrivateApiClass
+    api: FTXPrivateApiClass
     openPrice: number
     closePrice: number
     losscutPrice?: number
@@ -35,12 +31,8 @@ export interface FTXSinglePositionParameters extends BasePositionParameters {
 }
 
 export class FTXSinglePosition extends BasePositionClass {
-    // Global State
-    private static _lastOrderTime?: {[marketName: string]: number}
-
     // Parameters
-    private _api: PrivateApiClass
-    private _minOrderInterval: number
+    private _api: FTXPrivateApiClass
 
     // Position State
     private _marketInfo: MarketInfo
@@ -60,7 +52,6 @@ export class FTXSinglePosition extends BasePositionClass {
         super(params)
         this._api = params.api
         this._marketInfo = params.marketInfo
-        this._minOrderInterval = params.minOrderInterval || 200
         const size = params.funds/params.openPrice
         this._openOrder = new FTXOrderClass({
             market: params.marketInfo,
@@ -78,40 +69,9 @@ export class FTXSinglePosition extends BasePositionClass {
         })
         this._initialSize = this._openOrder.size
         this._losscutPrice = params.losscutPrice
-        FTXSinglePosition.initializeLastOrderTime(this._marketInfo.name)
-    }
-
-    private static initializeLastOrderTime(market: string) {
-        if (!FTXSinglePosition._lastOrderTime){
-            FTXSinglePosition._lastOrderTime = {}
-        }
-        if (!FTXSinglePosition._lastOrderTime[market]){
-            FTXSinglePosition._lastOrderTime[market] = Date.now()
-        }
-    }
-
-    private async sleepWhileOrderInterval(): Promise<void> {
-        if (!FTXSinglePosition._lastOrderTime) {
-            throw new Error('no last order')
-        }
-        if (FTXSinglePosition._lastOrderTime[this._marketInfo.name]) {
-            const interval = Date.now() - FTXSinglePosition._lastOrderTime[this._marketInfo.name]
-            if (interval > 0) {
-                if (interval < this._minOrderInterval) {
-                    FTXSinglePosition._lastOrderTime[this._marketInfo.name] += this._minOrderInterval 
-                    await sleep(this._minOrderInterval - interval)
-                } else if (interval > this._minOrderInterval) {
-                    FTXSinglePosition._lastOrderTime[this._marketInfo.name] = Date.now()
-                }
-            } else if (interval < 0) {
-                FTXSinglePosition._lastOrderTime[this._marketInfo.name] += this._minOrderInterval
-                await sleep(FTXSinglePosition._lastOrderTime[this._marketInfo.name] - Date.now())
-            }
-        }
     }
 
     private async placeOrder(order: FTXOrderClass): Promise<FTXResponse<PlaceOrderResponce>> {
-        await this.sleepWhileOrderInterval()
         if (this._backtestMode) {
             return {
                 success: 1,
@@ -282,14 +242,6 @@ export class FTXSinglePosition extends BasePositionClass {
         return this._losscut
     }
 
-    get bestBid(): number {
-        return super.bestBid
-    }
-
-    get bestAsk(): number {
-        return super.bestAsk
-    }
-
     get losscutPrice(): number | undefined {
         return this._losscutPrice
     }
@@ -304,6 +256,14 @@ export class FTXSinglePosition extends BasePositionClass {
 
     get currentSize(): number {
         return this._currentSize
+    }
+
+    get bestAsk(): number {
+        return super.bestAsk
+    }
+
+    get bestBid(): number {
+        return super.bestBid
     }
 
     set bestAsk(value: number) {
