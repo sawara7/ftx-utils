@@ -10,7 +10,6 @@ import {
 export interface FTXOrderSettings extends BaseOrderSettings {
     reduceOnly?: boolean; //	false	optional; default is false
     ioc?: boolean; //	false	optional; default is false
-    clientId?: string; //	null	optional; client order id
 }
 
 export class FTXOrderClass extends BaseOrderClass {

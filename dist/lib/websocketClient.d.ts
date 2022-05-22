@@ -1,10 +1,10 @@
-import { wsOrder, wsTicker } from "..";
+import { FTXPrivateApiConfig, wsOrder, wsTicker } from "..";
 import { SlackNotifier } from "slack-notification";
 export interface WebsocketAPIClientParams {
+    apiSettings: FTXPrivateApiConfig;
     notifier?: SlackNotifier;
     subscribeOrder: boolean;
     tickerSymbols: string[];
-    subaccount: string;
     onClientStart?: () => void;
     onClientError?: () => void;
     onClientOrder?: (order: wsOrder) => void;

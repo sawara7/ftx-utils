@@ -1,19 +1,18 @@
 import { 
+    FTXPrivateApiConfig,
     WebsocketAPI,
     wsFill,
     wsOrder,
-    wsTicker,
-    wsTrade
+    wsTicker
 } from ".."
 import { sleep, timeBeforeMin } from "my-utils"
-import { getRealTimeDatabase } from "firebase-utils-server"
 import { SlackNotifier } from "slack-notification"
 
 export interface WebsocketAPIClientParams {
+    apiSettings: FTXPrivateApiConfig,
     notifier?: SlackNotifier,
     subscribeOrder: boolean,
     tickerSymbols: string[],
-    subaccount: string,
     onClientStart?: ()=>void
     onClientError?: ()=>void
     onClientOrder?: (order: wsOrder)=>void
@@ -39,7 +38,9 @@ export class WebsocketAPIClient {
         this.notifier = params.notifier
         this.subscribeOrder = params.subscribeOrder
         this.tickerSymbols = params.tickerSymbols
-        this.subaccount = params.subaccount
+        this.subaccount = params.apiSettings.subAccount
+        this.apiKey = params.apiSettings.apiKey
+        this.apiSecret = params.apiSettings.apiSecret
         this.onClientStart = params.onClientStart 
         this.onClientError = params.onClientError
         this.onClientOrder = params.onClientOrder
@@ -47,10 +48,6 @@ export class WebsocketAPIClient {
     }
 
     async Start() {
-        const rdb = await getRealTimeDatabase()
-        this.apiKey = await rdb.get(await rdb.getReference('settings/ftx/apiKey')) as string
-        this.apiSecret = await rdb.get(await rdb.getReference('settings/ftx/apiSecret')) as string
-        
         this.wsAPI = new WebsocketAPI({
             apiKey: this.apiKey,
             apiSecret: this.apiSecret,
