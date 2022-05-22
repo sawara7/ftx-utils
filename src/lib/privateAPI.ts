@@ -182,6 +182,8 @@ export class FTXPrivateApiClass extends BaseApiClass {
                 FTXPrivateApiClass._lastOrderTime[market] += this._minOrderInterval
                 await sleep(FTXPrivateApiClass._lastOrderTime[market] - Date.now())
             }
+        } else {
+            FTXPrivateApiClass._lastOrderTime[market] = Date.now()
         }
     }
 }

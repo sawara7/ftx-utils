@@ -164,6 +164,9 @@ class FTXPrivateApiClass extends baseAPI_1.BaseApiClass {
                     yield (0, my_utils_1.sleep)(FTXPrivateApiClass._lastOrderTime[market] - Date.now());
                 }
             }
+            else {
+                FTXPrivateApiClass._lastOrderTime[market] = Date.now();
+            }
         });
     }
 }
