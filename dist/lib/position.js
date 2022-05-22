@@ -48,7 +48,7 @@ class FTXPositionClass extends trade_utils_1.BasePositionClass {
         return __awaiter(this, void 0, void 0, function* () {
             const res = yield this.placeOrder(this.openOrder);
             if (res.success === 0) {
-                throw new Error('Place Order Error');
+                throw new Error('[Place Order Error]' + res.result);
             }
             return res.result.id.toString();
         });
@@ -66,7 +66,7 @@ class FTXPositionClass extends trade_utils_1.BasePositionClass {
                     price: this.closeOrder.side === 'buy' ? this.bestBid : this.bestAsk
                 }));
             if (res.success === 0) {
-                throw new Error('Place Order Error');
+                throw new Error('[Place Order Error]' + res.result);
             }
             return res.result.id.toString();
         });
@@ -80,7 +80,10 @@ class FTXPositionClass extends trade_utils_1.BasePositionClass {
     }
     doLosscut() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.state.enabledLosscut && this.state.orderID) {
+            if (this.state.isNoOrder) {
+                this.close();
+            }
+            else {
                 this.cancel();
             }
         });

@@ -53,7 +53,7 @@ export class FTXPositionClass extends BasePositionClass {
     public async doOpen() {
         const res = await this.placeOrder(this.openOrder)
         if (res.success === 0) {
-            throw new Error('Place Order Error')
+            throw new Error('[Place Order Error]' + res.result)
         }
         return res.result.id.toString()
     }
@@ -71,7 +71,7 @@ export class FTXPositionClass extends BasePositionClass {
                 price: this.closeOrder.side==='buy'? this.bestBid: this.bestAsk
             }))
         if (res.success === 0) {
-            throw new Error('Place Order Error')
+            throw new Error('[Place Order Error]' + res.result)
         }
         return res.result.id.toString()
     }
@@ -83,7 +83,9 @@ export class FTXPositionClass extends BasePositionClass {
     }
 
     public async doLosscut() {
-        if (this.state.enabledLosscut && this.state.orderID) {
+        if (this.state.isNoOrder) {
+            this.close()
+        } else {
             this.cancel()
         }
     }
