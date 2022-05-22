@@ -8,23 +8,27 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "jest"
   },
   "author": "sawara",
   "license": "ISC",
   "devDependencies": {
-    "@types/ws": "^8.2.2",
+    "@types/jest": "^27.5.1",
     "@types/node": "^14.14.34",
-    "typescript": "^4.3.5"
+    "@types/ws": "^8.2.2",
+    "jest": "^28.1.0",
+    "ts-jest": "^28.0.2",
+    "typescript": "^4.6.4"
   },
   "bundleDependencies": false,
   "dependencies": {
-    "ws": "^8.3.0",
-    "axios": "^0.21.1",
     "querystring": "^0.2.1",
-    "my-utils": "github:sawara7/my-utils",
+    "axios": "^0.21.1",
+    "ws": "^8.3.0",
+    "firebase-utils-server": "github:sawara7/firebase-utils-server",
+    "slack-notification": "github:sawara7/slack-notification",
     "trade-utils": "github:sawara7/trade-utils",
-    "firebase-utils-server": "github:sawara7/firebase-utils-server", 
-    "slack-notification": "github:sawara7/slack-notification"
+    "my-utils": "github:sawara7/my-utils"
   }
 }

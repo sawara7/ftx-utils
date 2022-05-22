@@ -4,5 +4,5 @@ export * from './lib/requestType';
 export * from './lib/responseType';
 export * from './lib/websocketAPI';
 export * from './lib/websocketClient';
-export * from './lib/singlePosition';
+export * from './lib/position';
 export * from './lib/getAPI';
