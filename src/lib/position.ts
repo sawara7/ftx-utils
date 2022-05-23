@@ -82,14 +82,6 @@ export class FTXPositionClass extends BasePositionClass {
         }
     }
 
-    public async doLosscut() {
-        if (this.state.isNoOrder) {
-            this.close()
-        } else {
-            this.cancel()
-        }
-    }
-
     get openOrder(): FTXOrderClass {
         return super.openOrder as FTXOrderClass
     }

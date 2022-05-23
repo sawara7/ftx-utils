@@ -11,7 +11,6 @@ export declare class FTXPositionClass extends BasePositionClass {
     doOpen(): Promise<string>;
     doClose(): Promise<string>;
     doCancel(): Promise<void>;
-    doLosscut(): Promise<void>;
     get openOrder(): FTXOrderClass;
     get closeOrder(): FTXOrderClass;
 }

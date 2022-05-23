@@ -78,16 +78,6 @@ class FTXPositionClass extends trade_utils_1.BasePositionClass {
             }
         });
     }
-    doLosscut() {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (this.state.isNoOrder) {
-                this.close();
-            }
-            else {
-                this.cancel();
-            }
-        });
-    }
     get openOrder() {
         return super.openOrder;
     }
