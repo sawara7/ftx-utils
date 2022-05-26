@@ -68,7 +68,7 @@ export class FTXPositionClass extends BasePositionClass {
                 type: this.closeOrder.type,
                 side: this.closeOrder.side,
                 size: this.currentSize,
-                price: this.closeOrder.side==='buy'? this.bestBid: this.bestAsk
+                price: this.closeOrder.side === 'buy'? this.bestBid: this.bestAsk
             }))
         if (res.success === 0) {
             throw new Error('[Place Order Error]' + res.result)
