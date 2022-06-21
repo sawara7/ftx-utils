@@ -24,12 +24,12 @@ export class FTXOrderClass extends BaseOrderClass {
         this._clientID = params.clientID || ''
     }
 
-    get limitOrderRequest(): PlaceOrderRequest {
+    get OrderRequest(): PlaceOrderRequest {
         return {
             market:	this.market.name,
             side: this.side, 
-            price: this.price,
-            type: 'limit',
+            price: this.type === 'limit'? this.price: null,
+            type: this.type,
             size: this.size,	
             reduceOnly: this._reduceOnly,
             ioc: this._ioc,

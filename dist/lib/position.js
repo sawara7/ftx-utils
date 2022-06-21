@@ -34,14 +34,14 @@ class FTXPositionClass extends trade_utils_1.BasePositionClass {
                         size: order.size,
                         status: 'open',
                         type: order.type,
-                        reduceOnly: order.limitOrderRequest.reduceOnly || false,
-                        ioc: order.limitOrderRequest.ioc || false,
-                        postOnly: order.limitOrderRequest.postOnly || false,
-                        clientId: order.limitOrderRequest.clientId || 'test'
+                        reduceOnly: order.OrderRequest.reduceOnly || false,
+                        ioc: order.OrderRequest.ioc || false,
+                        postOnly: order.OrderRequest.postOnly || false,
+                        clientId: order.OrderRequest.clientId || 'test'
                     }
                 };
             }
-            return yield this._api.placeOrder(order.limitOrderRequest);
+            return yield this._api.placeOrder(order.OrderRequest);
         });
     }
     doOpen() {

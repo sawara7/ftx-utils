@@ -9,5 +9,5 @@ export declare class FTXOrderClass extends BaseOrderClass {
     private _ioc;
     private _clientID;
     constructor(params: FTXOrderSettings);
-    get limitOrderRequest(): PlaceOrderRequest;
+    get OrderRequest(): PlaceOrderRequest;
 }

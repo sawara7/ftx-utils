@@ -40,14 +40,14 @@ export class FTXPositionClass extends BasePositionClass {
                     size: order.size,	
                     status:	'open',
                     type: order.type,	
-                    reduceOnly: order.limitOrderRequest.reduceOnly || false,
-                    ioc: order.limitOrderRequest.ioc || false,	
-                    postOnly: order.limitOrderRequest.postOnly || false,	
-                    clientId: order.limitOrderRequest.clientId || 'test'
+                    reduceOnly: order.OrderRequest.reduceOnly || false,
+                    ioc: order.OrderRequest.ioc || false,	
+                    postOnly: order.OrderRequest.postOnly || false,	
+                    clientId: order.OrderRequest.clientId || 'test'
                 }
             }
         }
-        return await this._api.placeOrder(order.limitOrderRequest)
+        return await this._api.placeOrder(order.OrderRequest)
     }
 
     public async doOpen() {
