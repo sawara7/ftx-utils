@@ -24,7 +24,7 @@ import {
     WithdrawalResponse
 } from './responseType'
 import * as querystring from 'querystring'
-import { PositionResponse } from '..'
+import { Account, PositionResponse } from '..'
 import { sleep } from 'my-utils'
 
 const BASE_URL = 'https://ftx.com'
@@ -128,6 +128,11 @@ export class FTXPrivateApiClass extends BaseApiClass {
     public getPositions(params: GetPositionsRequest): Promise<FTXResponse<PositionResponse[]>> {
         const path = '/api/positions'
         return this.get(path, params)
+    }
+
+    public getAccount(): Promise<FTXResponse<Account>> {
+        const path = '/api/account'
+        return this.get(path, {})
     }
 
     get<T>(path: string, query?: {}) {

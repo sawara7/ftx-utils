@@ -220,3 +220,21 @@ export interface PositionResponse {
         For MOVE: initialMarginRequirement * openSize * (index price)
         Otherwise: initialMarginRequirement * openSize * (mark price) */
 }
+
+export interface Account {
+    backstopProvider: boolean //true	whether or not the account is a registered backstop liquidity provider
+    collateral: number //3568181.02691129	amount of collateral
+    freeCollateral: number //1786071.456884368	amount of free collateral
+    initialMarginRequirement: number //0.12222384240257728	average of initialMarginRequirement for individual futures, weighed by position notional. Cannot open new positions if openMarginFraction falls below this value.
+    liquidating: boolean //false True if the account is currently being liquidated
+    maintenanceMarginRequirement: number //0.07177992558058484	Average of maintenanceMarginRequirement for individual futures, weighed by position notional. Account enters liquidation mode if margin fraction falls below this value.
+    makerFee: number //0.0002 -	
+    marginFraction: number //0.5588433331419503 -	ratio between total account value and total account position notional.
+    openMarginFraction: number //0.2447194090423075	Ratio between total realized account value and total open position notional
+    takerFee: number //0.0005	
+    totalAccountValue: number //3568180.98341129	total value of the account, using mark price for positions
+    totalPositionSize: number //6384939.6992	total size of positions held by the account, using mark price
+    username: string //user@domain.com	
+    leverage: number //10.0	Max account leverage
+    positions: PositionResponse[] //See Get positions for details
+}
