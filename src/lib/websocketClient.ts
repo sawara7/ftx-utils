@@ -6,11 +6,9 @@ import {
     wsTicker
 } from ".."
 import { sleep, timeBeforeMin } from "my-utils"
-import { SlackNotifier } from "slack-notification"
 
 export interface WebsocketAPIClientParams {
     apiSettings: FTXPrivateApiConfig,
-    notifier?: SlackNotifier,
     subscribeOrder: boolean,
     tickerSymbols: string[],
     onClientStart?: ()=>void
@@ -29,13 +27,11 @@ export class WebsocketAPIClient {
     private subscribeOrder: boolean = true
     private pongTime: number = 0
     private checkPongTimeProcID?: NodeJS.Timeout
-    private notifier?: SlackNotifier
     private onClientStart?: ()=>void
     private onClientError?: ()=>void
     private onClientOrder?: (order: wsOrder)=>void
     private onClientTicker?: (ticker: wsTicker)=> void
     constructor(params: WebsocketAPIClientParams) {
-        this.notifier = params.notifier
         this.subscribeOrder = params.subscribeOrder
         this.tickerSymbols = params.tickerSymbols
         this.subaccount = params.apiSettings.subAccount
@@ -69,14 +65,12 @@ export class WebsocketAPIClient {
 
     private checkPongTime = ()=> {
         if (this.pongTime < timeBeforeMin(5) && this.checkPongTimeProcID) {
-            this.notifier?.sendMessage("Pong not coming.")
             clearInterval(this.checkPongTimeProcID)
             delete this.checkPongTimeProcID
         }
     }
 
     private onWebSocketOpen = async () => {
-        this.notifier?.sendMessage("WebSocket Open")
         this.isError = false
         this.wsAPI?.login()
         await sleep(3000)
@@ -98,20 +92,16 @@ export class WebsocketAPIClient {
     }
 
     private onWebSocketClose = async () => {
-        this.notifier?.sendMessage("WebSocket Close")
     }
 
     private onWebSocketError = async () => {
-        this.notifier?.sendMessage("WebSocket Error")
     }
 
     private onError = (code: string, message: string) => {
-        this.notifier?.sendMessage("FTX:" + code + message)
         this.isError = true
     }
 
     private onInfo = (code: string, message: string) => {
-        this.notifier?.sendMessage("FTX:" + code + message)
     }
 
     private onPong = ()=> {

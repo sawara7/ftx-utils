@@ -112,6 +112,10 @@ class FTXPrivateApiClass extends baseAPI_1.BaseApiClass {
         const path = '/api/positions';
         return this.get(path, params);
     }
+    getAccount() {
+        const path = '/api/account';
+        return this.get(path, {});
+    }
     get(path, query) {
         let queryPath = path;
         if (query && Object.keys(query).length > 0) {

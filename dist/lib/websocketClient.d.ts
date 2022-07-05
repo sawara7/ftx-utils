@@ -1,8 +1,6 @@
 import { FTXPrivateApiConfig, wsOrder, wsTicker } from "..";
-import { SlackNotifier } from "slack-notification";
 export interface WebsocketAPIClientParams {
     apiSettings: FTXPrivateApiConfig;
-    notifier?: SlackNotifier;
     subscribeOrder: boolean;
     tickerSymbols: string[];
     onClientStart?: () => void;
@@ -20,7 +18,6 @@ export declare class WebsocketAPIClient {
     private subscribeOrder;
     private pongTime;
     private checkPongTimeProcID?;
-    private notifier?;
     private onClientStart?;
     private onClientError?;
     private onClientOrder?;

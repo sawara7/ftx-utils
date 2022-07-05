@@ -18,24 +18,21 @@ class WebsocketAPIClient {
         this.subscribeOrder = true;
         this.pongTime = 0;
         this.checkPongTime = () => {
-            var _a;
             if (this.pongTime < (0, my_utils_1.timeBeforeMin)(5) && this.checkPongTimeProcID) {
-                (_a = this.notifier) === null || _a === void 0 ? void 0 : _a.sendMessage("Pong not coming.");
                 clearInterval(this.checkPongTimeProcID);
                 delete this.checkPongTimeProcID;
             }
         };
         this.onWebSocketOpen = () => __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d;
-            (_a = this.notifier) === null || _a === void 0 ? void 0 : _a.sendMessage("WebSocket Open");
+            var _a, _b, _c;
             this.isError = false;
-            (_b = this.wsAPI) === null || _b === void 0 ? void 0 : _b.login();
+            (_a = this.wsAPI) === null || _a === void 0 ? void 0 : _a.login();
             yield (0, my_utils_1.sleep)(3000);
             if (!this.isError) {
                 if (this.subscribeOrder) {
-                    (_c = this.wsAPI) === null || _c === void 0 ? void 0 : _c.subscribePrivate("orders");
+                    (_b = this.wsAPI) === null || _b === void 0 ? void 0 : _b.subscribePrivate("orders");
                     for (const m of this.tickerSymbols) {
-                        (_d = this.wsAPI) === null || _d === void 0 ? void 0 : _d.subscribePublic("ticker", m);
+                        (_c = this.wsAPI) === null || _c === void 0 ? void 0 : _c.subscribePublic("ticker", m);
                     }
                 }
                 if (this.onClientStart) {
@@ -49,21 +46,13 @@ class WebsocketAPIClient {
             }
         });
         this.onWebSocketClose = () => __awaiter(this, void 0, void 0, function* () {
-            var _e;
-            (_e = this.notifier) === null || _e === void 0 ? void 0 : _e.sendMessage("WebSocket Close");
         });
         this.onWebSocketError = () => __awaiter(this, void 0, void 0, function* () {
-            var _f;
-            (_f = this.notifier) === null || _f === void 0 ? void 0 : _f.sendMessage("WebSocket Error");
         });
         this.onError = (code, message) => {
-            var _a;
-            (_a = this.notifier) === null || _a === void 0 ? void 0 : _a.sendMessage("FTX:" + code + message);
             this.isError = true;
         };
         this.onInfo = (code, message) => {
-            var _a;
-            (_a = this.notifier) === null || _a === void 0 ? void 0 : _a.sendMessage("FTX:" + code + message);
         };
         this.onPong = () => {
             this.pongTime = Date.now();
@@ -80,7 +69,6 @@ class WebsocketAPIClient {
                 this.onClientTicker(ticker);
             }
         };
-        this.notifier = params.notifier;
         this.subscribeOrder = params.subscribeOrder;
         this.tickerSymbols = params.tickerSymbols;
         this.subaccount = params.apiSettings.subAccount;

@@ -1,7 +1,7 @@
 import { ApiConfig, BaseApiClass } from './baseAPI';
 import { CancelAllOrdersRequest, GetFillsRequest, GetFundingPaymentRequest, GetOrderHistoryRequest, GetPositionsRequest, PlaceOrderRequest, WithdrawalRequest } from './requestType';
 import { Balance, FundingRatePayment, GetFillsResponse, GetOrderHistoryResponse, OpenOrder, PlaceOrderResponce, FTXResponse, Subaccount, WithdrawalResponse } from './responseType';
-import { PositionResponse } from '..';
+import { Account, PositionResponse } from '..';
 export interface FTXPrivateApiConfig extends ApiConfig {
     apiKey: string;
     apiSecret: string;
@@ -31,6 +31,7 @@ export declare class FTXPrivateApiClass extends BaseApiClass {
     cancelOrder(id: number): Promise<FTXResponse<string>>;
     cancelOrderByClientID(id: string): Promise<FTXResponse<string>>;
     getPositions(params: GetPositionsRequest): Promise<FTXResponse<PositionResponse[]>>;
+    getAccount(): Promise<FTXResponse<Account>>;
     get<T>(path: string, query?: {}): Promise<any>;
     post<T>(path: string, body: {}): Promise<any>;
     delete<T>(path: string, query?: {}): Promise<any>;

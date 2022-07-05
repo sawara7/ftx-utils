@@ -201,3 +201,20 @@ export interface PositionResponse {
     unrealizedPnl: number;
     collateralUsed: number;
 }
+export interface Account {
+    backstopProvider: boolean;
+    collateral: number;
+    freeCollateral: number;
+    initialMarginRequirement: number;
+    liquidating: boolean;
+    maintenanceMarginRequirement: number;
+    makerFee: number;
+    marginFraction: number;
+    openMarginFraction: number;
+    takerFee: number;
+    totalAccountValue: number;
+    totalPositionSize: number;
+    username: string;
+    leverage: number;
+    positions: PositionResponse[];
+}
