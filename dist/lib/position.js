@@ -60,7 +60,7 @@ class FTXPositionClass extends trade_utils_1.BasePositionClass {
                 this.closeOrder :
                 new order_1.FTXOrderClass({
                     market: this.closeOrder.market,
-                    type: this.closeOrder.type,
+                    type: this.state.isLosscut ? 'market' : this.closeOrder.type,
                     side: this.closeOrder.side,
                     size: this.currentSize,
                     price: this.closeOrder.side === 'buy' ? this.bestBid : this.bestAsk
