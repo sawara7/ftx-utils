@@ -55,7 +55,7 @@ class FTXPositionClass extends trade_utils_1.BasePositionClass {
     doClose() {
         return __awaiter(this, void 0, void 0, function* () {
             const s = this.state.isLosscut ? "losscut" : "close";
-            const res = yield this.placeOrder((s === "close" || !this.losscutOrder) ? this.closeOrder : this.losscutOrder);
+            const res = yield this.placeOrder(s === "close" ? this.closeOrder : this.losscutOrder);
             if (res.success === 0) {
                 throw new Error('[Place Order Error]' + res.result);
             }
