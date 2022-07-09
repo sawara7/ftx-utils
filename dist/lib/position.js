@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FTXPositionClass = void 0;
 const trade_utils_1 = require("trade-utils");
-const order_1 = require("./order");
 class FTXPositionClass extends trade_utils_1.BasePositionClass {
     constructor(params) {
         super(params);
@@ -56,15 +55,7 @@ class FTXPositionClass extends trade_utils_1.BasePositionClass {
     doClose() {
         return __awaiter(this, void 0, void 0, function* () {
             const s = this.state.isLosscut ? "losscut" : "close";
-            const res = yield this.placeOrder(s === "close" ?
-                this.closeOrder :
-                new order_1.FTXOrderClass({
-                    market: this.closeOrder.market,
-                    type: this.state.isLosscut ? 'market' : this.closeOrder.type,
-                    side: this.closeOrder.side,
-                    size: this.currentSize,
-                    price: this.closeOrder.side === 'buy' ? this.bestBid : this.bestAsk
-                }));
+            const res = yield this.placeOrder((s === "close" || !this.losscutOrder) ? this.closeOrder : this.losscutOrder);
             if (res.success === 0) {
                 throw new Error('[Place Order Error]' + res.result);
             }
@@ -83,6 +74,9 @@ class FTXPositionClass extends trade_utils_1.BasePositionClass {
     }
     get closeOrder() {
         return super.closeOrder;
+    }
+    get losscutOrder() {
+        return super.losscutOrder;
     }
 }
 exports.FTXPositionClass = FTXPositionClass;

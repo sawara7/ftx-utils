@@ -13,4 +13,5 @@ export declare class FTXPositionClass extends BasePositionClass {
     doCancel(): Promise<void>;
     get openOrder(): FTXOrderClass;
     get closeOrder(): FTXOrderClass;
+    get losscutOrder(): FTXOrderClass | undefined;
 }

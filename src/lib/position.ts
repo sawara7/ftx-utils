@@ -60,16 +60,7 @@ export class FTXPositionClass extends BasePositionClass {
     
     public async doClose() {
         const s = this.state.isLosscut? "losscut": "close"
-        const res = await this.placeOrder(
-            s === "close"? 
-            this.closeOrder:
-            new FTXOrderClass({
-                market: this.closeOrder.market,
-                type: this.state.isLosscut? 'market': this.closeOrder.type,
-                side: this.closeOrder.side,
-                size: this.currentSize,
-                price: this.closeOrder.side === 'buy'? this.bestBid: this.bestAsk
-            }))
+        const res = await this.placeOrder( s === "close"? this.closeOrder: this.losscutOrder )
         if (res.success === 0) {
             throw new Error('[Place Order Error]' + res.result)
         }
@@ -88,5 +79,9 @@ export class FTXPositionClass extends BasePositionClass {
     
     get closeOrder(): FTXOrderClass {
         return super.closeOrder as FTXOrderClass
+    }
+
+    get losscutOrder(): FTXOrderClass {
+        return super.losscutOrder as FTXOrderClass
     }
 }
