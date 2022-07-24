@@ -15,13 +15,11 @@ export interface FTXOrderSettings extends BaseOrderSettings {
 export class FTXOrderClass extends BaseOrderClass {
     private _reduceOnly: boolean
     private _ioc: boolean
-    private _clientID: string
 
     constructor (params: FTXOrderSettings) {
         super(params)
         this._reduceOnly = params.reduceOnly || false
         this._ioc = params.ioc || false
-        this._clientID = params.clientID || ''
     }
 
     get OrderRequest(): PlaceOrderRequest {

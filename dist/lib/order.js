@@ -7,7 +7,6 @@ class FTXOrderClass extends trade_utils_1.BaseOrderClass {
         super(params);
         this._reduceOnly = params.reduceOnly || false;
         this._ioc = params.ioc || false;
-        this._clientID = params.clientID || '';
     }
     get OrderRequest() {
         return {

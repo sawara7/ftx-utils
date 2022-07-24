@@ -7,7 +7,6 @@ export interface FTXOrderSettings extends BaseOrderSettings {
 export declare class FTXOrderClass extends BaseOrderClass {
     private _reduceOnly;
     private _ioc;
-    private _clientID;
     constructor(params: FTXOrderSettings);
     get OrderRequest(): PlaceOrderRequest;
 }
