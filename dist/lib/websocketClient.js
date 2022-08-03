@@ -31,9 +31,9 @@ class WebsocketAPIClient {
             if (!this.isError) {
                 if (this.subscribeOrder) {
                     (_b = this.wsAPI) === null || _b === void 0 ? void 0 : _b.subscribePrivate("orders");
-                    for (const m of this.tickerSymbols) {
-                        (_c = this.wsAPI) === null || _c === void 0 ? void 0 : _c.subscribePublic("ticker", m);
-                    }
+                }
+                for (const m of this.tickerSymbols) {
+                    (_c = this.wsAPI) === null || _c === void 0 ? void 0 : _c.subscribePublic("ticker", m);
                 }
                 if (this.onClientStart) {
                     this.onClientStart();

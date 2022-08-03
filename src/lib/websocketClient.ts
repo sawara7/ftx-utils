@@ -77,9 +77,9 @@ export class WebsocketAPIClient {
         if (!this.isError) {
             if (this.subscribeOrder) {
                 this.wsAPI?.subscribePrivate("orders")
-                for (const m of this.tickerSymbols) {
-                    this.wsAPI?.subscribePublic("ticker", m)
-                }
+            }
+            for (const m of this.tickerSymbols) {
+                this.wsAPI?.subscribePublic("ticker", m)
             }
             if (this.onClientStart) {
                 this.onClientStart()
